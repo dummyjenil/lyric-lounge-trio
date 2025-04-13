@@ -10,6 +10,9 @@ const ThemeSelector: React.FC = () => {
   const { setTheme, currentTheme, isAdmin } = useMusic();
   const { toast } = useToast();
 
+  // If not admin, don't render anything
+  if (!isAdmin) return null;
+
   const themes: { name: Theme; label: string }[] = [
     { name: 'midnight', label: 'Midnight' },
     { name: 'ocean', label: 'Ocean' },
@@ -34,20 +37,11 @@ const ThemeSelector: React.FC = () => {
   };
 
   const handleThemeClick = (theme: Theme) => {
-    if (!isAdmin) {
-      toast({
-        title: "Permission Denied",
-        description: "Only administrators can change themes.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
     setTheme(theme);
   };
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 animate-fade-in">
       <h3 
         className={cn(
           "text-xl font-semibold mb-3",
@@ -61,9 +55,6 @@ const ThemeSelector: React.FC = () => {
         )}
       >
         Themes
-        {!isAdmin && (
-          <span className="ml-2 text-sm font-normal opacity-70">(Admin only)</span>
-        )}
       </h3>
       <div className="flex flex-wrap gap-2">
         {themes.map((theme) => (
@@ -71,22 +62,16 @@ const ThemeSelector: React.FC = () => {
             key={theme.name}
             onClick={() => handleThemeClick(theme.name)}
             className={cn(
-              "w-16 h-16 rounded-lg relative border-2 transition-all hover:scale-105",
+              "w-16 h-16 rounded-lg relative border-2 transition-all hover:scale-110 hover:shadow-lg",
               getThemeColors(theme.name),
-              currentTheme === theme.name ? "border-opacity-100" : "border-opacity-0"
+              currentTheme === theme.name ? "border-opacity-100 scale-105" : "border-opacity-0"
             )}
-            title={isAdmin ? theme.label : `${theme.label} (Admin only)`}
+            title={theme.label}
             aria-label={`Set theme to ${theme.label}`}
-            disabled={!isAdmin}
           >
             {currentTheme === theme.name && (
-              <span className="absolute inset-0 flex items-center justify-center text-white">
+              <span className="absolute inset-0 flex items-center justify-center text-white animate-scale-in">
                 <CheckIcon size={20} />
-              </span>
-            )}
-            {!isAdmin && (
-              <span className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
-                <LockIcon size={16} className="text-white/80" />
               </span>
             )}
           </button>

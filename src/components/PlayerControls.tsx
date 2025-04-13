@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Disc } from 'lucide-react';
 
 const PlayerControls: React.FC = () => {
   const { 
@@ -16,6 +16,23 @@ const PlayerControls: React.FC = () => {
     seek,
     currentTheme
   } = useMusic();
+  
+  const [seekHover, setSeekHover] = useState(false);
+  const [isChanging, setIsChanging] = useState(false);
+
+  // Animation for progress transitions
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsChanging(false);
+    }, 600);
+    
+    return () => clearTimeout(timer);
+  }, [currentTime]);
+
+  // Trigger animation when song changes
+  useEffect(() => {
+    setIsChanging(true);
+  }, [duration]);
 
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60);
@@ -23,58 +40,93 @@ const PlayerControls: React.FC = () => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
+  // Calculate progress percentage
+  const progressPercentage = duration ? (currentTime / duration) * 100 : 0;
+
   return (
-    <div className="w-full py-4">
-      {/* Progress bar with enhanced styling */}
-      <div className="mb-6">
+    <div className="w-full py-4 transition-all duration-300">
+      {/* Progress bar with enhanced styling and animations */}
+      <div 
+        className="mb-6 relative" 
+        onMouseEnter={() => setSeekHover(true)}
+        onMouseLeave={() => setSeekHover(false)}
+      >
         <div className="relative">
           <Slider
             value={[currentTime]}
             max={duration || 100}
             step={0.1}
-            onValueChange={(values) => seek(values[0])}
+            onValueChange={(values) => {
+              seek(values[0]);
+              setIsChanging(true);
+            }}
             className={cn(
-              "h-2.5 cursor-pointer z-10",
+              "h-3 cursor-pointer z-10 transition-all duration-300",
+              seekHover ? "scale-y-[1.15]" : "",
               {
-                "[&_.SliderTrack]:bg-midnight-secondary [&_.SliderRange]:bg-midnight-accent [&_.SliderThumb]:border-midnight-accent [&_.SliderThumb]:bg-midnight-text": currentTheme === 'midnight',
-                "[&_.SliderTrack]:bg-ocean-secondary [&_.SliderRange]:bg-ocean-accent [&_.SliderThumb]:border-ocean-accent [&_.SliderThumb]:bg-ocean-text": currentTheme === 'ocean',
-                "[&_.SliderTrack]:bg-sunset-secondary [&_.SliderRange]:bg-sunset-accent [&_.SliderThumb]:border-sunset-accent [&_.SliderThumb]:bg-sunset-text": currentTheme === 'sunset',
-                "[&_.SliderTrack]:bg-forest-secondary [&_.SliderRange]:bg-forest-accent [&_.SliderThumb]:border-forest-accent [&_.SliderThumb]:bg-forest-text": currentTheme === 'forest',
-                "[&_.SliderTrack]:bg-candy-secondary [&_.SliderRange]:bg-candy-accent [&_.SliderThumb]:border-candy-accent [&_.SliderThumb]:bg-candy-text": currentTheme === 'candy',
+                "[&_.SliderTrack]:bg-midnight-secondary/40 [&_.SliderRange]:bg-midnight-accent [&_.SliderThumb]:border-midnight-accent [&_.SliderThumb]:bg-midnight-text": currentTheme === 'midnight',
+                "[&_.SliderTrack]:bg-ocean-secondary/40 [&_.SliderRange]:bg-ocean-accent [&_.SliderThumb]:border-ocean-accent [&_.SliderThumb]:bg-ocean-text": currentTheme === 'ocean',
+                "[&_.SliderTrack]:bg-sunset-secondary/40 [&_.SliderRange]:bg-sunset-accent [&_.SliderThumb]:border-sunset-accent [&_.SliderThumb]:bg-sunset-text": currentTheme === 'sunset',
+                "[&_.SliderTrack]:bg-forest-secondary/40 [&_.SliderRange]:bg-forest-accent [&_.SliderThumb]:border-forest-accent [&_.SliderThumb]:bg-forest-text": currentTheme === 'forest',
+                "[&_.SliderTrack]:bg-candy-secondary/40 [&_.SliderRange]:bg-candy-accent [&_.SliderThumb]:border-candy-accent [&_.SliderThumb]:bg-candy-text": currentTheme === 'candy',
               }
             )}
           />
+          
+          {/* Animated glow effect on slider track */}
+          <div 
+            className={cn(
+              "absolute bottom-0 h-1 opacity-70 blur-[2px] rounded-full transition-all duration-500 ease-out",
+              {
+                "bg-midnight-accent": currentTheme === 'midnight',
+                "bg-ocean-accent": currentTheme === 'ocean',
+                "bg-sunset-accent": currentTheme === 'sunset',
+                "bg-forest-accent": currentTheme === 'forest',
+                "bg-candy-accent": currentTheme === 'candy',
+              }
+            )} 
+            style={{ 
+              width: `${progressPercentage}%`,
+              opacity: seekHover ? 0.9 : 0.5,
+              height: seekHover ? '6px' : '4px',
+              transform: `translateY(${seekHover ? '-2px' : '0px'})`,
+            }}
+          />
         </div>
-        <div className="flex justify-between text-sm mt-1.5 text-opacity-90 font-medium">
-          <span className={cn({
+        
+        <div className={cn(
+          "flex justify-between text-sm mt-2 font-medium transition-all duration-300",
+          isChanging ? "animate-fade-in" : ""
+        )}>
+          <span className={cn("transition-all duration-300", {
             "text-midnight-text": currentTheme === 'midnight',
             "text-ocean-text": currentTheme === 'ocean',
             "text-sunset-text": currentTheme === 'sunset',
             "text-forest-text": currentTheme === 'forest',
             "text-candy-text": currentTheme === 'candy',
           })}>{formatTime(currentTime)}</span>
-          <span className={cn({
-            "text-midnight-text": currentTheme === 'midnight',
-            "text-ocean-text": currentTheme === 'ocean',
-            "text-sunset-text": currentTheme === 'sunset',
-            "text-forest-text": currentTheme === 'forest',
-            "text-candy-text": currentTheme === 'candy',
+          <span className={cn("transition-all duration-300", {
+            "text-midnight-text/70": currentTheme === 'midnight',
+            "text-ocean-text/70": currentTheme === 'ocean',
+            "text-sunset-text/70": currentTheme === 'sunset',
+            "text-forest-text/70": currentTheme === 'forest',
+            "text-candy-text/70": currentTheme === 'candy',
           })}>{formatTime(duration)}</span>
         </div>
       </div>
 
-      {/* Redesigned Controls */}
-      <div className="flex items-center justify-center gap-8 mb-2 relative">
+      {/* Enhanced Controls with animations */}
+      <div className="flex items-center justify-center gap-6 md:gap-8 mb-4 relative">
         <button
           onClick={prevSong}
           className={cn(
-            "p-3 rounded-full transition-all hover:scale-110",
+            "p-3 rounded-full transition-all hover:scale-110 active:scale-95",
             {
-              "text-midnight-text hover:bg-midnight-secondary/50": currentTheme === 'midnight',
-              "text-ocean-text hover:bg-ocean-secondary/50": currentTheme === 'ocean',
-              "text-sunset-text hover:bg-sunset-secondary/50": currentTheme === 'sunset',
-              "text-forest-text hover:bg-forest-secondary/50": currentTheme === 'forest',
-              "text-candy-text hover:bg-candy-secondary/50": currentTheme === 'candy',
+              "text-midnight-text hover:bg-midnight-secondary/30": currentTheme === 'midnight',
+              "text-ocean-text hover:bg-ocean-secondary/30": currentTheme === 'ocean',
+              "text-sunset-text hover:bg-sunset-secondary/30": currentTheme === 'sunset',
+              "text-forest-text hover:bg-forest-secondary/30": currentTheme === 'forest',
+              "text-candy-text hover:bg-candy-secondary/30": currentTheme === 'candy',
             }
           )}
           aria-label="Previous song"
@@ -85,7 +137,8 @@ const PlayerControls: React.FC = () => {
         <button
           onClick={playPause}
           className={cn(
-            "p-5 rounded-full transition-all hover:scale-105 shadow-lg flex items-center justify-center",
+            "p-5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center",
+            isPlaying ? "animate-scale-in" : "",
             {
               "bg-midnight-accent text-midnight-text hover:bg-midnight-accent/90": currentTheme === 'midnight',
               "bg-ocean-accent text-ocean-text hover:bg-ocean-accent/90": currentTheme === 'ocean',
@@ -96,19 +149,36 @@ const PlayerControls: React.FC = () => {
           )}
           aria-label={isPlaying ? "Pause" : "Play"}
         >
-          {isPlaying ? <Pause size={32} /> : <Play size={32} className="ml-1" />}
+          {isPlaying ? 
+            <Pause size={32} className="animate-fade-in" /> : 
+            <Play size={32} className="ml-1 animate-fade-in" />
+          }
+
+          {/* Pulsing animation ring when playing */}
+          {isPlaying && (
+            <span className={cn(
+              "absolute inset-0 rounded-full animate-pulse opacity-70",
+              {
+                "bg-midnight-accent": currentTheme === 'midnight',
+                "bg-ocean-accent": currentTheme === 'ocean',
+                "bg-sunset-accent": currentTheme === 'sunset',
+                "bg-forest-accent": currentTheme === 'forest',
+                "bg-candy-accent": currentTheme === 'candy',
+              }
+            )} style={{ animationDuration: '2s' }}></span>
+          )}
         </button>
         
         <button
           onClick={nextSong}
           className={cn(
-            "p-3 rounded-full transition-all hover:scale-110",
+            "p-3 rounded-full transition-all hover:scale-110 active:scale-95",
             {
-              "text-midnight-text hover:bg-midnight-secondary/50": currentTheme === 'midnight',
-              "text-ocean-text hover:bg-ocean-secondary/50": currentTheme === 'ocean',
-              "text-sunset-text hover:bg-sunset-secondary/50": currentTheme === 'sunset',
-              "text-forest-text hover:bg-forest-secondary/50": currentTheme === 'forest',
-              "text-candy-text hover:bg-candy-secondary/50": currentTheme === 'candy',
+              "text-midnight-text hover:bg-midnight-secondary/30": currentTheme === 'midnight',
+              "text-ocean-text hover:bg-ocean-secondary/30": currentTheme === 'ocean',
+              "text-sunset-text hover:bg-sunset-secondary/30": currentTheme === 'sunset',
+              "text-forest-text hover:bg-forest-secondary/30": currentTheme === 'forest',
+              "text-candy-text hover:bg-candy-secondary/30": currentTheme === 'candy',
             }
           )}
           aria-label="Next song"
@@ -116,6 +186,26 @@ const PlayerControls: React.FC = () => {
           <SkipForward size={28} />
         </button>
       </div>
+      
+      {/* Decorative record spinner animation (shows when playing) */}
+      {isPlaying && (
+        <div className="flex justify-center mt-1 opacity-70">
+          <Disc 
+            size={18} 
+            className={cn(
+              "animate-spin",
+              {
+                "text-midnight-accent": currentTheme === 'midnight',
+                "text-ocean-accent": currentTheme === 'ocean',
+                "text-sunset-accent": currentTheme === 'sunset',
+                "text-forest-accent": currentTheme === 'forest',
+                "text-candy-accent": currentTheme === 'candy',
+              }
+            )} 
+            style={{ animationDuration: '3s' }} 
+          />
+        </div>
+      )}
     </div>
   );
 };
