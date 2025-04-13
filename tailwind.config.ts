@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,37 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom theme colors
+				midnight: {
+					primary: '#121212',
+					secondary: '#282828',
+					accent: '#8B5CF6',
+					text: '#FFFFFF'
+				},
+				ocean: {
+					primary: '#0F2D3D',
+					secondary: '#2A4494',
+					accent: '#39A0ED',
+					text: '#FFFFFF'
+				},
+				sunset: {
+					primary: '#402A2C',
+					secondary: '#D1512D',
+					accent: '#F9C22E',
+					text: '#FFFFFF'
+				},
+				forest: {
+					primary: '#253237',
+					secondary: '#5C6B73',
+					accent: '#9AE19D',
+					text: '#FFFFFF'
+				},
+				candy: {
+					primary: '#4A154B',
+					secondary: '#7D56F4',
+					accent: '#F2B6C2',
+					text: '#FFFFFF'
 				}
 			},
 			borderRadius: {
@@ -84,11 +116,29 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0'
+					},
+					'100%': {
+						opacity: '1'
+					}
+				},
+				'scale-up': {
+					'0%': {
+						transform: 'scale(0.95)'
+					},
+					'100%': {
+						transform: 'scale(1)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out',
+				'scale-up': 'scale-up 0.3s ease-out'
 			}
 		}
 	},
