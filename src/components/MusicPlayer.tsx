@@ -1,13 +1,12 @@
-
 import React from 'react';
 import { useMusic } from '@/components/MusicContext';
 import AlbumCover from '@/components/AlbumCover';
 import SongInfo from '@/components/SongInfo';
 import PlayerControls from '@/components/PlayerControls';
 import LyricsDisplay from '@/components/LyricsDisplay';
-import ThemeSelector from '@/components/ThemeSelector';
 import LanguageSelector from '@/components/LanguageSelector';
 import PlaylistView from '@/components/PlaylistView';
+import TopNav from '@/components/TopNav';
 import { cn } from '@/lib/utils';
 
 const MusicPlayer: React.FC = () => {
@@ -31,31 +30,32 @@ const MusicPlayer: React.FC = () => {
   return (
     <div 
       className={cn(
-        "min-h-screen flex flex-col md:flex-row w-full p-4 md:p-8 lg:p-12 animate-fade-in transition-colors",
+        "min-h-screen flex flex-col w-full animate-fade-in transition-colors pt-14",
         getBackgroundStyle()
       )}
     >
-      {/* Left column - Player controls */}
-      <div className="w-full md:w-1/2 lg:w-2/5 p-4 flex flex-col items-center">
-        <div className="max-w-xs w-full">
-          <AlbumCover />
-          <SongInfo />
-          <PlayerControls />
-          <div className="md:hidden">
-            <ThemeSelector />
-            <LanguageSelector />
+      <TopNav />
+      <div className="flex flex-col md:flex-row w-full p-4 md:p-8 lg:p-12">
+        {/* Left column - Player controls */}
+        <div className="w-full md:w-1/2 lg:w-2/5 p-4 flex flex-col items-center">
+          <div className="max-w-xs w-full">
+            <AlbumCover />
+            <SongInfo />
+            <PlayerControls />
+            <div className="md:hidden">
+              <LanguageSelector />
+            </div>
           </div>
         </div>
-      </div>
-      
-      {/* Right column - Lyrics and settings */}
-      <div className="w-full md:w-1/2 lg:w-3/5 p-4 md:pl-8">
-        <LyricsDisplay />
-        <div className="hidden md:block">
-          <ThemeSelector />
-          <LanguageSelector />
+        
+        {/* Right column - Lyrics and settings */}
+        <div className="w-full md:w-1/2 lg:w-3/5 p-4 md:pl-8">
+          <LyricsDisplay />
+          <div className="hidden md:block">
+            <LanguageSelector />
+          </div>
+          <PlaylistView />
         </div>
-        <PlaylistView />
       </div>
     </div>
   );

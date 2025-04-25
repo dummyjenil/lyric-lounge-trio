@@ -4,6 +4,13 @@ import { useMusic } from '@/components/MusicContext';
 import { Theme } from '@/types/music';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const ThemeSelector: React.FC = () => {
   const { currentTheme, setTheme } = useMusic();
@@ -17,34 +24,33 @@ const ThemeSelector: React.FC = () => {
   ];
 
   return (
-    <div className="mt-6 animate-fade-in">
-      <div className="flex flex-wrap gap-2">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" className="w-9 h-9">
+          <Menu className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-40">
         {themes.map((theme) => (
-          <Button
+          <DropdownMenuItem
             key={theme.value}
             onClick={() => setTheme(theme.value)}
-            variant={currentTheme === theme.value ? "default" : "outline"}
             className={cn(
-              "transition-all",
+              "cursor-pointer",
               {
-                "bg-midnight-accent hover:bg-midnight-accent/90 text-midnight-text": 
-                  currentTheme === theme.value && theme.value === 'midnight',
-                "bg-ocean-accent hover:bg-ocean-accent/90 text-ocean-text": 
-                  currentTheme === theme.value && theme.value === 'ocean',
-                "bg-sunset-accent hover:bg-sunset-accent/90 text-sunset-text": 
-                  currentTheme === theme.value && theme.value === 'sunset',
-                "bg-forest-accent hover:bg-forest-accent/90 text-forest-text": 
-                  currentTheme === theme.value && theme.value === 'forest',
-                "bg-candy-accent hover:bg-candy-accent/90 text-candy-text": 
-                  currentTheme === theme.value && theme.value === 'candy',
+                "bg-midnight-accent text-midnight-text": currentTheme === theme.value && theme.value === 'midnight',
+                "bg-ocean-accent text-ocean-text": currentTheme === theme.value && theme.value === 'ocean',
+                "bg-sunset-accent text-sunset-text": currentTheme === theme.value && theme.value === 'sunset',
+                "bg-forest-accent text-forest-text": currentTheme === theme.value && theme.value === 'forest',
+                "bg-candy-accent text-candy-text": currentTheme === theme.value && theme.value === 'candy',
               }
             )}
           >
             {theme.label}
-          </Button>
+          </DropdownMenuItem>
         ))}
-      </div>
-    </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
