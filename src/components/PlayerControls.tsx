@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import { Play, Pause, SkipBack, SkipForward, Disc } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Music2 } from 'lucide-react';
 
 const PlayerControls: React.FC = () => {
   const { 
@@ -19,6 +19,7 @@ const PlayerControls: React.FC = () => {
   
   const [seekHover, setSeekHover] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
+  const [buttonPress, setButtonPress] = useState('');
 
   // Animation for progress transitions
   useEffect(() => {
@@ -29,10 +30,15 @@ const PlayerControls: React.FC = () => {
     return () => clearTimeout(timer);
   }, [currentTime]);
 
-  // Trigger animation when song changes
+  // Button press animation
   useEffect(() => {
-    setIsChanging(true);
-  }, [duration]);
+    if (buttonPress) {
+      const timer = setTimeout(() => {
+        setButtonPress('');
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [buttonPress]);
 
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60);
@@ -40,8 +46,14 @@ const PlayerControls: React.FC = () => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
-  // Calculate progress percentage
   const progressPercentage = duration ? (currentTime / duration) * 100 : 0;
+
+  const handleControlClick = (action: 'prev' | 'play' | 'next') => {
+    setButtonPress(action);
+    if (action === 'prev') prevSong();
+    if (action === 'play') playPause();
+    if (action === 'next') nextSong();
+  };
 
   return (
     <div className="w-full py-4 transition-all duration-300">
@@ -62,7 +74,7 @@ const PlayerControls: React.FC = () => {
             }}
             className={cn(
               "h-3 cursor-pointer z-10 transition-all duration-300",
-              seekHover ? "scale-y-[1.15]" : "",
+              seekHover ? "scale-y-[1.2]" : "",
               {
                 "[&_.SliderTrack]:bg-midnight-secondary/40 [&_.SliderRange]:bg-midnight-accent [&_.SliderThumb]:border-midnight-accent [&_.SliderThumb]:bg-midnight-text": currentTheme === 'midnight',
                 "[&_.SliderTrack]:bg-ocean-secondary/40 [&_.SliderRange]:bg-ocean-accent [&_.SliderThumb]:border-ocean-accent [&_.SliderThumb]:bg-ocean-text": currentTheme === 'ocean',
@@ -73,10 +85,10 @@ const PlayerControls: React.FC = () => {
             )}
           />
           
-          {/* Animated glow effect on slider track */}
+          {/* Enhanced glow effect on slider track */}
           <div 
             className={cn(
-              "absolute bottom-0 h-1 opacity-70 blur-[2px] rounded-full transition-all duration-500 ease-out",
+              "absolute bottom-0 h-1 opacity-70 blur-[3px] rounded-full transition-all duration-500 ease-out",
               {
                 "bg-midnight-accent": currentTheme === 'midnight',
                 "bg-ocean-accent": currentTheme === 'ocean',
@@ -88,7 +100,7 @@ const PlayerControls: React.FC = () => {
             style={{ 
               width: `${progressPercentage}%`,
               opacity: seekHover ? 0.9 : 0.5,
-              height: seekHover ? '6px' : '4px',
+              height: seekHover ? '8px' : '4px',
               transform: `translateY(${seekHover ? '-2px' : '0px'})`,
             }}
           />
@@ -98,29 +110,36 @@ const PlayerControls: React.FC = () => {
           "flex justify-between text-sm mt-2 font-medium transition-all duration-300",
           isChanging ? "animate-fade-in" : ""
         )}>
-          <span className={cn("transition-all duration-300", {
-            "text-midnight-text": currentTheme === 'midnight',
-            "text-ocean-text": currentTheme === 'ocean',
-            "text-sunset-text": currentTheme === 'sunset',
-            "text-forest-text": currentTheme === 'forest',
-            "text-candy-text": currentTheme === 'candy',
-          })}>{formatTime(currentTime)}</span>
-          <span className={cn("transition-all duration-300", {
-            "text-midnight-text/70": currentTheme === 'midnight',
-            "text-ocean-text/70": currentTheme === 'ocean',
-            "text-sunset-text/70": currentTheme === 'sunset',
-            "text-forest-text/70": currentTheme === 'forest',
-            "text-candy-text/70": currentTheme === 'candy',
-          })}>{formatTime(duration)}</span>
+          <span className={cn(
+            "transition-all duration-300",
+            {
+              "text-midnight-text": currentTheme === 'midnight',
+              "text-ocean-text": currentTheme === 'ocean',
+              "text-sunset-text": currentTheme === 'sunset',
+              "text-forest-text": currentTheme === 'forest',
+              "text-candy-text": currentTheme === 'candy',
+            }
+          )}>{formatTime(currentTime)}</span>
+          <span className={cn(
+            "transition-all duration-300",
+            {
+              "text-midnight-text/70": currentTheme === 'midnight',
+              "text-ocean-text/70": currentTheme === 'ocean',
+              "text-sunset-text/70": currentTheme === 'sunset',
+              "text-forest-text/70": currentTheme === 'forest',
+              "text-candy-text/70": currentTheme === 'candy',
+            }
+          )}>{formatTime(duration)}</span>
         </div>
       </div>
 
-      {/* Enhanced Controls with animations */}
-      <div className="flex items-center justify-center gap-6 md:gap-8 mb-4 relative">
+      {/* Enhanced Controls with new animations */}
+      <div className="flex items-center justify-center gap-8 mb-4 relative">
         <button
-          onClick={prevSong}
+          onClick={() => handleControlClick('prev')}
           className={cn(
-            "p-3 rounded-full transition-all hover:scale-110 active:scale-95",
+            "p-3 rounded-full transition-all duration-200",
+            buttonPress === 'prev' ? "scale-90" : "hover:scale-110",
             {
               "text-midnight-text hover:bg-midnight-secondary/30": currentTheme === 'midnight',
               "text-ocean-text hover:bg-ocean-secondary/30": currentTheme === 'ocean',
@@ -131,14 +150,14 @@ const PlayerControls: React.FC = () => {
           )}
           aria-label="Previous song"
         >
-          <SkipBack size={28} />
+          <SkipBack size={28} className="transition-transform duration-200" />
         </button>
         
         <button
-          onClick={playPause}
+          onClick={() => handleControlClick('play')}
           className={cn(
-            "p-5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center",
-            isPlaying ? "animate-scale-in" : "",
+            "p-5 rounded-full transition-all duration-200 shadow-lg flex items-center justify-center relative",
+            buttonPress === 'play' ? "scale-90" : "hover:scale-105",
             {
               "bg-midnight-accent text-midnight-text hover:bg-midnight-accent/90": currentTheme === 'midnight',
               "bg-ocean-accent text-ocean-text hover:bg-ocean-accent/90": currentTheme === 'ocean',
@@ -150,29 +169,33 @@ const PlayerControls: React.FC = () => {
           aria-label={isPlaying ? "Pause" : "Play"}
         >
           {isPlaying ? 
-            <Pause size={32} className="animate-fade-in" /> : 
-            <Play size={32} className="ml-1 animate-fade-in" />
+            <Pause size={32} className="animate-fade-in transition-transform duration-200" /> : 
+            <Play size={32} className="ml-1 animate-fade-in transition-transform duration-200" />
           }
 
-          {/* Pulsing animation ring when playing */}
+          {/* Enhanced pulsing animation ring */}
           {isPlaying && (
-            <span className={cn(
-              "absolute inset-0 rounded-full animate-pulse opacity-70",
-              {
-                "bg-midnight-accent": currentTheme === 'midnight',
-                "bg-ocean-accent": currentTheme === 'ocean',
-                "bg-sunset-accent": currentTheme === 'sunset',
-                "bg-forest-accent": currentTheme === 'forest',
-                "bg-candy-accent": currentTheme === 'candy',
-              }
-            )} style={{ animationDuration: '2s' }}></span>
+            <div 
+              className={cn(
+                "absolute inset-0 rounded-full animate-ping opacity-30",
+                {
+                  "bg-midnight-accent": currentTheme === 'midnight',
+                  "bg-ocean-accent": currentTheme === 'ocean',
+                  "bg-sunset-accent": currentTheme === 'sunset',
+                  "bg-forest-accent": currentTheme === 'forest',
+                  "bg-candy-accent": currentTheme === 'candy',
+                }
+              )}
+              style={{ animationDuration: '2s' }}
+            />
           )}
         </button>
         
         <button
-          onClick={nextSong}
+          onClick={() => handleControlClick('next')}
           className={cn(
-            "p-3 rounded-full transition-all hover:scale-110 active:scale-95",
+            "p-3 rounded-full transition-all duration-200",
+            buttonPress === 'next' ? "scale-90" : "hover:scale-110",
             {
               "text-midnight-text hover:bg-midnight-secondary/30": currentTheme === 'midnight',
               "text-ocean-text hover:bg-ocean-secondary/30": currentTheme === 'ocean',
@@ -183,17 +206,17 @@ const PlayerControls: React.FC = () => {
           )}
           aria-label="Next song"
         >
-          <SkipForward size={28} />
+          <SkipForward size={28} className="transition-transform duration-200" />
         </button>
       </div>
       
-      {/* Decorative record spinner animation (shows when playing) */}
+      {/* Enhanced music wave animation when playing */}
       {isPlaying && (
         <div className="flex justify-center mt-1 opacity-70">
-          <Disc 
-            size={18} 
+          <Music2 
+            size={20} 
             className={cn(
-              "animate-spin",
+              "animate-bounce",
               {
                 "text-midnight-accent": currentTheme === 'midnight',
                 "text-ocean-accent": currentTheme === 'ocean',
@@ -202,7 +225,7 @@ const PlayerControls: React.FC = () => {
                 "text-candy-accent": currentTheme === 'candy',
               }
             )} 
-            style={{ animationDuration: '3s' }} 
+            style={{ animationDuration: '2s' }} 
           />
         </div>
       )}

@@ -9,16 +9,13 @@ interface MusicContextType {
   isPlaying: boolean;
   currentTime: number;
   duration: number;
-  volume: number;
   currentTheme: Theme;
   currentLanguage: Language;
   songs: Song[];
-  isAdmin: boolean;
   playPause: () => void;
   nextSong: () => void;
   prevSong: () => void;
   seek: (time: number) => void;
-  setVolume: (volume: number) => void;
   setTheme: (theme: Theme) => void;
   setLanguage: (language: Language) => void;
   playSong: (songId: string) => void;
@@ -31,28 +28,11 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolumeState] = useState(0.7);
   const [currentTheme, setCurrentTheme] = useState<Theme>('midnight');
   const [currentLanguage, setCurrentLanguage] = useState<Language>('english');
-  const [isAdmin, setIsAdmin] = useState(false); // Default to non-admin user
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
-
-  // For demo purposes, we'll add a useEffect to set admin status based on a URL parameter
-  useEffect(() => {
-    // Check for admin status in URL or localStorage (for demo purposes)
-    const urlParams = new URLSearchParams(window.location.search);
-    const adminParam = urlParams.get('admin');
-    
-    if (adminParam === 'true') {
-      setIsAdmin(true);
-      localStorage.setItem('musicPlayerIsAdmin', 'true');
-    } else {
-      const storedAdminStatus = localStorage.getItem('musicPlayerIsAdmin');
-      setIsAdmin(storedAdminStatus === 'true');
-    }
-  }, []);
 
   useEffect(() => {
     audioRef.current = new Audio();
@@ -77,7 +57,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       audioRef.current.addEventListener('timeupdate', updateTime);
       audioRef.current.addEventListener('ended', handleEnded);
       audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-      audioRef.current.volume = volume;
     }
     
     return () => {
@@ -92,8 +71,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     if (currentSong && audioRef.current) {
-      // In a real app, we would use real audio files
-      // For this demo, we'll simulate audio playback
       audioRef.current.src = currentSong.audioUrl;
       
       if (isPlaying) {
@@ -108,12 +85,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     }
   }, [currentSong]);
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, [volume]);
 
   const playPause = () => {
     if (!currentSong) return;
@@ -134,7 +105,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const nextIndex = (currentIndex + 1) % songs.length;
     setCurrentSong(songs[nextIndex]);
     
-    // If currently playing, auto-play the next song
     if (isPlaying) {
       setTimeout(() => {
         audioRef.current?.play().catch(error => {
@@ -149,7 +119,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
     setCurrentSong(songs[prevIndex]);
     
-    // If currently playing, auto-play the previous song
     if (isPlaying) {
       setTimeout(() => {
         audioRef.current?.play().catch(error => {
@@ -166,24 +135,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  const setVolume = (newVolume: number) => {
-    setVolumeState(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume;
-    }
-  };
-
   const setTheme = (theme: Theme) => {
-    // Only allow theme changes if admin (additional check)
-    if (!isAdmin) {
-      toast({
-        title: "Permission Denied",
-        description: "Only administrators can change themes.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
     setCurrentTheme(theme);
     toast({
       title: "Theme Changed",
@@ -219,16 +171,13 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         isPlaying,
         currentTime,
         duration,
-        volume,
         currentTheme,
         currentLanguage,
         songs,
-        isAdmin,
         playPause,
         nextSong,
         prevSong,
         seek,
-        setVolume,
         setTheme,
         setLanguage,
         playSong,
