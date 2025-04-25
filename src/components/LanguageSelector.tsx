@@ -16,20 +16,6 @@ const LanguageSelector: React.FC = () => {
 
   return (
     <div className="mt-6">
-      <h3 
-        className={cn(
-          "text-xl font-semibold mb-3",
-          {
-            "text-midnight-text": currentTheme === 'midnight',
-            "text-ocean-text": currentTheme === 'ocean',
-            "text-sunset-text": currentTheme === 'sunset',
-            "text-forest-text": currentTheme === 'forest',
-            "text-candy-text": currentTheme === 'candy',
-          }
-        )}
-      >
-        Language
-      </h3>
       <div className="flex gap-2">
         {languages.map((lang) => (
           <Button
