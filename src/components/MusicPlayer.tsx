@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { useMusic } from '@/components/MusicContext';
 import AlbumCover from '@/components/AlbumCover';
 import SongInfo from '@/components/SongInfo';
@@ -11,6 +12,14 @@ import { cn } from '@/lib/utils';
 
 const MusicPlayer: React.FC = () => {
   const { currentTheme } = useMusic();
+  
+  // Add smooth transition when theme changes
+  useEffect(() => {
+    document.body.classList.add('theme-transition');
+    return () => {
+      document.body.classList.remove('theme-transition');
+    };
+  }, []);
 
   const getBackgroundStyle = () => {
     switch (currentTheme) {
@@ -30,31 +39,46 @@ const MusicPlayer: React.FC = () => {
   return (
     <div 
       className={cn(
-        "min-h-screen flex flex-col w-full animate-fade-in transition-colors pt-14",
+        "min-h-screen flex flex-col w-full animate-fade-in transition-all duration-700 pt-16",
         getBackgroundStyle()
       )}
     >
       <TopNav />
-      <div className="flex flex-col md:flex-row w-full p-4 md:p-8 lg:p-12">
-        {/* Left column - Player controls */}
-        <div className="w-full md:w-1/2 lg:w-2/5 p-4 flex flex-col items-center">
-          <div className="max-w-xs w-full">
-            <AlbumCover />
-            <SongInfo />
-            <PlayerControls />
-            <div className="md:hidden">
-              <LanguageSelector />
+      <div className="container mx-auto max-w-screen-xl">
+        <div className="flex flex-col md:flex-row w-full p-4 md:p-8 lg:p-12 gap-8">
+          {/* Left column - Player controls */}
+          <div className="w-full md:w-1/2 lg:w-2/5 p-4 flex flex-col items-center animate-fade-in" style={{ animationDelay: "0.1s" }}>
+            <div className="max-w-xs w-full">
+              <AlbumCover />
+              <SongInfo />
+              <PlayerControls />
+              <div className="md:hidden mt-6">
+                <LanguageSelector />
+              </div>
             </div>
           </div>
-        </div>
-        
-        {/* Right column - Lyrics and settings */}
-        <div className="w-full md:w-1/2 lg:w-3/5 p-4 md:pl-8">
-          <LyricsDisplay />
-          <div className="hidden md:block">
-            <LanguageSelector />
+          
+          {/* Right column - Lyrics and settings */}
+          <div className="w-full md:w-1/2 lg:w-3/5 p-4 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            <div 
+              className={cn(
+                "rounded-xl p-6 shadow-xl backdrop-blur-sm transition-all duration-500",
+                {
+                  "bg-midnight-secondary/30": currentTheme === 'midnight',
+                  "bg-ocean-secondary/30": currentTheme === 'ocean',
+                  "bg-sunset-secondary/30": currentTheme === 'sunset',
+                  "bg-forest-secondary/30": currentTheme === 'forest',
+                  "bg-candy-secondary/30": currentTheme === 'candy',
+                }
+              )}
+            >
+              <LyricsDisplay />
+              <div className="hidden md:block">
+                <LanguageSelector />
+              </div>
+              <PlaylistView />
+            </div>
           </div>
-          <PlaylistView />
         </div>
       </div>
     </div>

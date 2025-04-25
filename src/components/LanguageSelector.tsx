@@ -15,26 +15,38 @@ const LanguageSelector: React.FC = () => {
   ];
 
   return (
-    <div className="mt-6">
-      <div className="flex gap-2">
+    <div className="mt-6 mb-4">
+      <div 
+        className={cn(
+          "flex flex-wrap gap-2 rounded-lg p-2",
+          {
+            "bg-midnight-primary/30": currentTheme === 'midnight',
+            "bg-ocean-primary/30": currentTheme === 'ocean',
+            "bg-sunset-primary/30": currentTheme === 'sunset',
+            "bg-forest-primary/30": currentTheme === 'forest',
+            "bg-candy-primary/30": currentTheme === 'candy',
+          }
+        )}
+      >
         {languages.map((lang) => (
           <Button
             key={lang.code}
             onClick={() => setLanguage(lang.code)}
-            variant={currentLanguage === lang.code ? "default" : "outline"}
+            variant={currentLanguage === lang.code ? "default" : "ghost"}
             className={cn(
-              "transition-all",
+              "flex-1 transition-all duration-300",
               {
-                "bg-midnight-accent hover:bg-midnight-accent/90 text-midnight-text": 
+                "bg-midnight-accent hover:bg-midnight-accent/90 text-midnight-text shadow-md hover:scale-105": 
                   currentLanguage === lang.code && currentTheme === 'midnight',
-                "bg-ocean-accent hover:bg-ocean-accent/90 text-ocean-text": 
+                "bg-ocean-accent hover:bg-ocean-accent/90 text-ocean-text shadow-md hover:scale-105": 
                   currentLanguage === lang.code && currentTheme === 'ocean',
-                "bg-sunset-accent hover:bg-sunset-accent/90 text-sunset-text": 
+                "bg-sunset-accent hover:bg-sunset-accent/90 text-sunset-text shadow-md hover:scale-105": 
                   currentLanguage === lang.code && currentTheme === 'sunset',
-                "bg-forest-accent hover:bg-forest-accent/90 text-forest-text": 
+                "bg-forest-accent hover:bg-forest-accent/90 text-forest-text shadow-md hover:scale-105": 
                   currentLanguage === lang.code && currentTheme === 'forest',
-                "bg-candy-accent hover:bg-candy-accent/90 text-candy-text": 
+                "bg-candy-accent hover:bg-candy-accent/90 text-candy-text shadow-md hover:scale-105": 
                   currentLanguage === lang.code && currentTheme === 'candy',
+                "hover:scale-105": currentLanguage !== lang.code,
               }
             )}
           >

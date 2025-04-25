@@ -2,6 +2,7 @@
 import React from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
+import { Music } from 'lucide-react';
 
 const SongInfo: React.FC = () => {
   const { currentSong, currentTheme } = useMusic();
@@ -9,10 +10,10 @@ const SongInfo: React.FC = () => {
   if (!currentSong) return null;
 
   return (
-    <div className="text-center py-4">
+    <div className="text-center py-4 animate-slide-up">
       <h2 
         className={cn(
-          "text-2xl font-bold mb-2 transition-colors",
+          "text-2xl font-bold mb-2 transition-colors flex items-center justify-center gap-2",
           {
             "text-midnight-text": currentTheme === 'midnight',
             "text-ocean-text": currentTheme === 'ocean',
@@ -22,6 +23,18 @@ const SongInfo: React.FC = () => {
           }
         )}
       >
+        <Music 
+          size={20} 
+          className={cn(
+            {
+              "text-midnight-accent": currentTheme === 'midnight',
+              "text-ocean-accent": currentTheme === 'ocean',
+              "text-sunset-accent": currentTheme === 'sunset',
+              "text-forest-accent": currentTheme === 'forest',
+              "text-candy-accent": currentTheme === 'candy',
+            }
+          )} 
+        />
         {currentSong.title}
       </h2>
       <p 
