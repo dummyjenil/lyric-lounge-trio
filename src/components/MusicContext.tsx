@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Song, Theme, Language } from '@/types/music';
 import { songs } from '@/data/songs';
@@ -24,6 +23,7 @@ interface MusicContextType {
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
 
 export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  
   const [currentSong, setCurrentSong] = useState<Song | null>(songs[0] || null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -137,10 +137,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const setTheme = (theme: Theme) => {
     setCurrentTheme(theme);
-    toast({
-      title: "Theme Changed",
-      description: `Theme set to ${theme.charAt(0).toUpperCase() + theme.slice(1)}`,
-    });
   };
 
   const setLanguage = (language: Language) => {
