@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Song, Theme, Language } from '@/types/music';
 import { songs } from '@/data/songs';
@@ -12,6 +11,9 @@ interface MusicContextType {
   currentTheme: Theme;
   currentLanguage: Language;
   songs: Song[];
+  searchQuery: string;
+  filteredSongs: Song[];
+  setSearchQuery: (query: string) => void;
   playPause: () => void;
   nextSong: () => void;
   prevSong: () => void;
@@ -31,6 +33,13 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [duration, setDuration] = useState(0);
   const [currentTheme, setCurrentTheme] = useState<Theme>('midnight');
   const [currentLanguage, setCurrentLanguage] = useState<Language>('english');
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Filter songs based on search query
+  const filteredSongs = songs.filter(song => 
+    song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    song.artist.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
@@ -171,6 +180,9 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         currentTheme,
         currentLanguage,
         songs,
+        searchQuery,
+        filteredSongs,
+        setSearchQuery,
         playPause,
         nextSong,
         prevSong,

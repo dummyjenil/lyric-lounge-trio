@@ -1,6 +1,7 @@
 
 import React from 'react';
 import ThemeSelector from './ThemeSelector';
+import SearchBar from './SearchBar';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
 
@@ -36,6 +37,9 @@ const TopNav: React.FC = () => {
           >
             Lyric Lounge
           </div>
+        </div>
+        <div className="flex-1 mx-4">
+          <SearchBar />
         </div>
         <ThemeSelector />
       </div>
