@@ -77,28 +77,28 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     updateAudioSource(currentSong);
   }, [currentSong]);
 
+  const contextValue = {
+    currentSong,
+    isPlaying,
+    currentTime,
+    duration,
+    currentTheme,
+    currentLanguage,
+    songs: filteredSongs,
+    searchQuery,
+    filteredSongs,
+    setSearchQuery,
+    playPause,
+    nextSong: handleNextSong,
+    prevSong: handlePrevSong,
+    seek,
+    setTheme,
+    setLanguage,
+    playSong: handlePlaySong,
+  };
+
   return (
-    <MusicContext.Provider
-      value={{
-        currentSong,
-        isPlaying,
-        currentTime,
-        duration,
-        currentTheme,
-        currentLanguage,
-        songs: filteredSongs,
-        searchQuery,
-        filteredSongs,
-        setSearchQuery,
-        playPause,
-        nextSong: handleNextSong,
-        prevSong: handlePrevSong,
-        seek,
-        setTheme,
-        setLanguage,
-        playSong: handlePlaySong,
-      }}
-    >
+    <MusicContext.Provider value={contextValue}>
       {children}
     </MusicContext.Provider>
   );

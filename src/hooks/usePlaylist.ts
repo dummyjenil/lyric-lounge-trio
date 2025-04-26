@@ -8,6 +8,8 @@ export const usePlaylist = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   const filteredSongs = songs.filter(song => {
+    if (!searchQuery.trim()) return true; // Show all songs if search query is empty
+    
     const query = searchQuery.toLowerCase().trim();
     return song.title.toLowerCase().includes(query) || 
            song.artist.toLowerCase().includes(query);
