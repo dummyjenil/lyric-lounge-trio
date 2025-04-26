@@ -7,10 +7,11 @@ export const usePlaylist = () => {
   const [currentSong, setCurrentSong] = useState<Song | null>(songs[0] || null);
   const [searchQuery, setSearchQuery] = useState('');
   
-  const filteredSongs = songs.filter(song => 
-    song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    song.artist.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredSongs = songs.filter(song => {
+    const query = searchQuery.toLowerCase().trim();
+    return song.title.toLowerCase().includes(query) || 
+           song.artist.toLowerCase().includes(query);
+  });
 
   const nextSong = () => {
     const currentIndex = songs.findIndex(song => song.id === currentSong?.id);
