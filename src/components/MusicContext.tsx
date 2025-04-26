@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+
+import React, { createContext, useContext } from 'react';
 import { Song, Theme, Language } from '@/types/music';
-import { songs } from '@/data/songs';
-import { useToast } from '@/hooks/use-toast';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { usePlaylist } from '@/hooks/usePlaylist';
+import { useTheme } from '@/hooks/useTheme';
 
 interface MusicContextType {
   currentSong: Song | null;
@@ -26,149 +28,54 @@ interface MusicContextType {
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
 
 export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  
-  const [currentSong, setCurrentSong] = useState<Song | null>(songs[0] || null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [currentTheme, setCurrentTheme] = useState<Theme>('midnight');
-  const [currentLanguage, setCurrentLanguage] = useState<Language>('english');
-  const [searchQuery, setSearchQuery] = useState('');
-  
-  // Filter songs based on search query
-  const filteredSongs = songs.filter(song => 
-    song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    song.artist.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const { toast } = useToast();
+  const { 
+    isPlaying, 
+    currentTime, 
+    duration, 
+    playPause, 
+    seek, 
+    updateAudioSource 
+  } = useAudioPlayer();
 
-  useEffect(() => {
-    audioRef.current = new Audio();
-    
-    const updateTime = () => {
-      if (audioRef.current) {
-        setCurrentTime(audioRef.current.currentTime);
-      }
-    };
-    
-    const handleEnded = () => {
-      nextSong();
-    };
-    
-    const handleLoadedMetadata = () => {
-      if (audioRef.current) {
-        setDuration(audioRef.current.duration);
-      }
-    };
-    
-    if (audioRef.current) {
-      audioRef.current.addEventListener('timeupdate', updateTime);
-      audioRef.current.addEventListener('ended', handleEnded);
-      audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-    }
-    
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.removeEventListener('timeupdate', updateTime);
-        audioRef.current.removeEventListener('ended', handleEnded);
-        audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        audioRef.current.pause();
-      }
-    };
-  }, []);
+  const {
+    currentSong,
+    searchQuery,
+    setSearchQuery,
+    filteredSongs,
+    nextSong,
+    prevSong,
+    playSong: selectSong,
+  } = usePlaylist();
 
-  useEffect(() => {
-    if (currentSong && audioRef.current) {
-      audioRef.current.src = currentSong.audioUrl;
-      
-      if (isPlaying) {
-        audioRef.current.play().catch(error => {
-          console.error("Audio playback error:", error);
-          toast({
-            title: "Playback Error",
-            description: "Could not play the audio file.",
-            variant: "destructive"
-          });
-        });
-      }
-    }
-  }, [currentSong]);
+  const {
+    currentTheme,
+    currentLanguage,
+    setTheme,
+    setLanguage,
+  } = useTheme();
 
-  const playPause = () => {
-    if (!currentSong) return;
-    
-    if (isPlaying) {
-      audioRef.current?.pause();
-    } else {
-      audioRef.current?.play().catch(error => {
-        console.error("Audio playback error:", error);
-      });
-    }
-    
-    setIsPlaying(!isPlaying);
+  // Handle song changes and playback
+  const handleNextSong = () => {
+    const next = nextSong();
+    updateAudioSource(next, isPlaying);
   };
 
-  const nextSong = () => {
-    const currentIndex = songs.findIndex(song => song.id === currentSong?.id);
-    const nextIndex = (currentIndex + 1) % songs.length;
-    setCurrentSong(songs[nextIndex]);
-    
-    if (isPlaying) {
-      setTimeout(() => {
-        audioRef.current?.play().catch(error => {
-          console.error("Audio playback error:", error);
-        });
-      }, 100);
-    }
+  const handlePrevSong = () => {
+    const prev = prevSong();
+    updateAudioSource(prev, isPlaying);
   };
 
-  const prevSong = () => {
-    const currentIndex = songs.findIndex(song => song.id === currentSong?.id);
-    const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
-    setCurrentSong(songs[prevIndex]);
-    
-    if (isPlaying) {
-      setTimeout(() => {
-        audioRef.current?.play().catch(error => {
-          console.error("Audio playback error:", error);
-        });
-      }, 100);
-    }
-  };
-
-  const seek = (time: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time;
-      setCurrentTime(time);
-    }
-  };
-
-  const setTheme = (theme: Theme) => {
-    setCurrentTheme(theme);
-  };
-
-  const setLanguage = (language: Language) => {
-    setCurrentLanguage(language);
-    toast({
-      title: "Language Changed",
-      description: `Lyrics now displayed in ${language.charAt(0).toUpperCase() + language.slice(1)}`,
-    });
-  };
-
-  const playSong = (songId: string) => {
-    const song = songs.find(s => s.id === songId);
+  const handlePlaySong = (songId: string) => {
+    const song = selectSong(songId);
     if (song) {
-      setCurrentSong(song);
-      setIsPlaying(true);
-      setTimeout(() => {
-        audioRef.current?.play().catch(error => {
-          console.error("Audio playback error:", error);
-        });
-      }, 100);
+      updateAudioSource(song, true);
     }
   };
+
+  // Update audio source when current song changes
+  React.useEffect(() => {
+    updateAudioSource(currentSong);
+  }, [currentSong]);
 
   return (
     <MusicContext.Provider
@@ -179,17 +86,17 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         duration,
         currentTheme,
         currentLanguage,
-        songs,
+        songs: filteredSongs,
         searchQuery,
         filteredSongs,
         setSearchQuery,
         playPause,
-        nextSong,
-        prevSong,
+        nextSong: handleNextSong,
+        prevSong: handlePrevSong,
         seek,
         setTheme,
         setLanguage,
-        playSong,
+        playSong: handlePlaySong,
       }}
     >
       {children}
