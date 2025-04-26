@@ -1,15 +1,35 @@
 
 import React from 'react';
 import { useMusic } from '@/components/MusicContext';
-import { Song } from '@/types/music';
 import { cn } from '@/lib/utils';
 import { Music, Play } from 'lucide-react';
 
 const PlaylistView: React.FC = () => {
-  const { songs, currentSong, playSong, currentTheme } = useMusic();
+  const { filteredSongs, currentSong, playSong, currentTheme } = useMusic();
+
+  if (filteredSongs.length === 0) {
+    return (
+      <div className="mt-6 text-center p-8 animate-fade-in">
+        <h3 
+          className={cn(
+            "text-xl font-semibold mb-3",
+            {
+              "text-midnight-text": currentTheme === 'midnight',
+              "text-ocean-text": currentTheme === 'ocean',
+              "text-sunset-text": currentTheme === 'sunset',
+              "text-forest-text": currentTheme === 'forest',
+              "text-candy-text": currentTheme === 'candy',
+            }
+          )}
+        >
+          No songs found
+        </h3>
+      </div>
+    );
+  }
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 animate-fade-in">
       <h3 
         className={cn(
           "text-xl font-semibold mb-3",
@@ -22,7 +42,7 @@ const PlaylistView: React.FC = () => {
           }
         )}
       >
-        Playlist
+        {filteredSongs.length === 1 ? '1 Song' : `${filteredSongs.length} Songs`}
       </h3>
       <div 
         className={cn(
@@ -36,7 +56,7 @@ const PlaylistView: React.FC = () => {
           }
         )}
       >
-        {songs.map((song) => (
+        {filteredSongs.map((song) => (
           <div
             key={song.id}
             onClick={() => playSong(song.id)}

@@ -6,10 +6,14 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 
 const SearchBar = () => {
-  const { currentTheme } = useMusic();
+  const { currentTheme, setSearchQuery } = useMusic();
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   return (
-    <div className="relative w-full max-w-sm">
+    <div className="relative w-full max-w-sm animate-fade-in">
       <div className="relative">
         <Search 
           className={cn(
@@ -26,6 +30,7 @@ const SearchBar = () => {
         <Input
           type="search"
           placeholder="Search songs..."
+          onChange={handleSearchChange}
           className={cn(
             "w-full pl-10 pr-4 h-9 text-sm transition-colors bg-white/10 border-0 focus-visible:ring-1",
             {
