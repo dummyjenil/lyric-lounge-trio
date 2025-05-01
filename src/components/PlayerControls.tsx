@@ -241,11 +241,20 @@ const PlayerControls: React.FC = () => {
         </button>
       </div>
       
-      {/* Action buttons row */}
-      <div className="flex justify-center mt-2 gap-4">
-        {/* Like button */}
+      {/* Action buttons row - Repositioned to be more prominent */}
+      <div className="flex justify-center items-center mt-3 mb-2 gap-5">
+        {/* Like button - Made more prominent */}
         {currentSong && (
-          <LikeButton songId={currentSong.id} size={20} />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="transform hover:scale-110 transition-all duration-200">
+                <LikeButton songId={currentSong.id} size={24} />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{currentSong && useMusic().isLiked(currentSong.id) ? "Unlike" : "Like"} this song</p>
+            </TooltipContent>
+          </Tooltip>
         )}
         
         {/* Share button */}
@@ -265,7 +274,7 @@ const PlayerControls: React.FC = () => {
               )}
               aria-label="Share song"
             >
-              <Share2 size={20} />
+              <Share2 size={22} />
             </button>
           </TooltipTrigger>
           <TooltipContent>
