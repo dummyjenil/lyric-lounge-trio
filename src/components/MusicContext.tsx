@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { Song, Theme, Language } from '@/types/music';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { usePlaylist } from '@/hooks/usePlaylist';
@@ -76,6 +76,17 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   React.useEffect(() => {
     updateAudioSource(currentSong);
   }, [currentSong]);
+  
+  // Check URL parameters for shared song
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type');
+    const data = params.get('data');
+    
+    if (type === 'song_id' && data) {
+      handlePlaySong(data);
+    }
+  }, []);
 
   const contextValue = {
     currentSong,

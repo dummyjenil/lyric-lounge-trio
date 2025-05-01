@@ -2,10 +2,13 @@
 import React from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
-import { Music, Play } from 'lucide-react';
+import { Music, Play, Share2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const PlaylistView: React.FC = () => {
   const { filteredSongs, currentSong, playSong, currentTheme, setSearchQuery } = useMusic();
+  const { toast } = useToast();
 
   if (filteredSongs.length === 0) {
     return (
@@ -30,6 +33,32 @@ const PlaylistView: React.FC = () => {
 
   const handleArtistClick = (artist: string) => {
     setSearchQuery(artist);
+  };
+  
+  const handleShareSong = (songId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Create the share URL with song_id parameter
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${baseUrl}?type=song_id&data=${songId}`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(shareUrl).then(
+      () => {
+        toast({
+          title: "Link copied!",
+          description: "Share URL has been copied to clipboard",
+        });
+      },
+      (err) => {
+        console.error('Failed to copy: ', err);
+        toast({
+          title: "Copy failed",
+          description: "Failed to copy the URL to clipboard",
+          variant: "destructive"
+        });
+      }
+    );
   };
 
   return (
@@ -145,6 +174,33 @@ const PlaylistView: React.FC = () => {
               >
                 {song.artist}
               </p>
+            </div>
+            
+            {/* Share button */}
+            <div className="ml-auto">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={(e) => handleShareSong(song.id, e)}
+                    className={cn(
+                      "p-1.5 rounded-full transition-all duration-200 hover:bg-opacity-20",
+                      {
+                        "text-midnight-accent hover:bg-midnight-secondary": currentTheme === 'midnight',
+                        "text-ocean-accent hover:bg-ocean-secondary": currentTheme === 'ocean',
+                        "text-sunset-accent hover:bg-sunset-secondary": currentTheme === 'sunset',
+                        "text-forest-accent hover:bg-forest-secondary": currentTheme === 'forest',
+                        "text-candy-accent hover:bg-candy-secondary": currentTheme === 'candy',
+                      }
+                    )}
+                    aria-label="Share song"
+                  >
+                    <Share2 size={16} />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Share this song</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         ))}

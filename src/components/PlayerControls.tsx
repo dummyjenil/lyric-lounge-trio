@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import { Play, Pause, SkipBack, SkipForward, Music2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Music2, Share2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const PlayerControls: React.FC = () => {
   const { 
@@ -14,9 +16,11 @@ const PlayerControls: React.FC = () => {
     currentTime, 
     duration, 
     seek,
-    currentTheme
+    currentTheme,
+    currentSong
   } = useMusic();
   
+  const { toast } = useToast();
   const [seekHover, setSeekHover] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
   const [buttonPress, setButtonPress] = useState('');
@@ -53,6 +57,32 @@ const PlayerControls: React.FC = () => {
     if (action === 'prev') prevSong();
     if (action === 'play') playPause();
     if (action === 'next') nextSong();
+  };
+
+  const handleShare = () => {
+    if (!currentSong) return;
+    
+    // Create the share URL with song_id parameter
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${baseUrl}?type=song_id&data=${currentSong.id}`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(shareUrl).then(
+      () => {
+        toast({
+          title: "Link copied!",
+          description: "Share URL has been copied to clipboard",
+        });
+      },
+      (err) => {
+        console.error('Failed to copy: ', err);
+        toast({
+          title: "Copy failed",
+          description: "Failed to copy the URL to clipboard",
+          variant: "destructive"
+        });
+      }
+    );
   };
 
   return (
@@ -208,6 +238,33 @@ const PlayerControls: React.FC = () => {
         >
           <SkipForward size={28} className="transition-transform duration-200" />
         </button>
+      </div>
+      
+      {/* Share button */}
+      <div className="flex justify-center mt-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={handleShare}
+              className={cn(
+                "p-2 rounded-full transition-all duration-200 hover:scale-110",
+                {
+                  "text-midnight-accent hover:bg-midnight-secondary/30": currentTheme === 'midnight',
+                  "text-ocean-accent hover:bg-ocean-secondary/30": currentTheme === 'ocean',
+                  "text-sunset-accent hover:bg-sunset-secondary/30": currentTheme === 'sunset',
+                  "text-forest-accent hover:bg-forest-secondary/30": currentTheme === 'forest',
+                  "text-candy-accent hover:bg-candy-secondary/30": currentTheme === 'candy',
+                }
+              )}
+              aria-label="Share song"
+            >
+              <Share2 size={20} />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Share this song</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
       
       {/* Enhanced music wave animation when playing */}
