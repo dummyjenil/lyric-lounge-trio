@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Music, Play } from 'lucide-react';
 
 const PlaylistView: React.FC = () => {
-  const { filteredSongs, currentSong, playSong, currentTheme } = useMusic();
+  const { filteredSongs, currentSong, playSong, currentTheme, setSearchQuery } = useMusic();
 
   if (filteredSongs.length === 0) {
     return (
@@ -27,6 +27,10 @@ const PlaylistView: React.FC = () => {
       </div>
     );
   }
+
+  const handleArtistClick = (artist: string) => {
+    setSearchQuery(artist);
+  };
 
   return (
     <div className="mt-6 animate-fade-in">
@@ -59,9 +63,8 @@ const PlaylistView: React.FC = () => {
         {filteredSongs.map((song) => (
           <div
             key={song.id}
-            onClick={() => playSong(song.id)}
             className={cn(
-              "flex items-center gap-3 p-3 rounded-md cursor-pointer transition-colors",
+              "flex items-center gap-3 p-3 rounded-md transition-colors",
               {
                 "bg-midnight-secondary/50 hover:bg-midnight-secondary": currentTheme === 'midnight',
                 "bg-ocean-secondary/50 hover:bg-ocean-secondary": currentTheme === 'ocean',
@@ -77,7 +80,10 @@ const PlaylistView: React.FC = () => {
               }
             )}
           >
-            <div className="w-10 h-10 flex-shrink-0 rounded overflow-hidden relative">
+            <div 
+              className="w-10 h-10 flex-shrink-0 rounded overflow-hidden relative cursor-pointer"
+              onClick={() => playSong(song.id)}
+            >
               {song.cover ? (
                 <img
                   src={song.cover}
@@ -106,7 +112,7 @@ const PlaylistView: React.FC = () => {
                 </div>
               )}
             </div>
-            <div className="flex-grow">
+            <div className="flex-grow cursor-pointer" onClick={() => playSong(song.id)}>
               <h4 
                 className={cn(
                   "font-medium text-sm",
@@ -123,7 +129,7 @@ const PlaylistView: React.FC = () => {
               </h4>
               <p 
                 className={cn(
-                  "text-xs opacity-70",
+                  "text-xs opacity-70 hover:opacity-100 transition-opacity cursor-pointer",
                   {
                     "text-midnight-text": currentTheme === 'midnight',
                     "text-ocean-text": currentTheme === 'ocean',
@@ -132,6 +138,10 @@ const PlaylistView: React.FC = () => {
                     "text-candy-text": currentTheme === 'candy',
                   }
                 )}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleArtistClick(song.artist);
+                }}
               >
                 {song.artist}
               </p>
