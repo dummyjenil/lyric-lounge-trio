@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Play, Pause, SkipBack, SkipForward, Music2, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import LikeButton from '@/components/LikeButton';
 
 const PlayerControls: React.FC = () => {
   const { 
@@ -240,8 +241,14 @@ const PlayerControls: React.FC = () => {
         </button>
       </div>
       
-      {/* Share button */}
-      <div className="flex justify-center mt-2">
+      {/* Action buttons row */}
+      <div className="flex justify-center mt-2 gap-4">
+        {/* Like button */}
+        {currentSong && (
+          <LikeButton songId={currentSong.id} size={20} />
+        )}
+        
+        {/* Share button */}
         <Tooltip>
           <TooltipTrigger asChild>
             <button

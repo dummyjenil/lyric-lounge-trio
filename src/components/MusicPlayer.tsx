@@ -11,7 +11,7 @@ import TopNav from '@/components/TopNav';
 import { cn } from '@/lib/utils';
 
 const MusicPlayer: React.FC = () => {
-  const { currentTheme, searchQuery, filteredSongs } = useMusic();
+  const { currentTheme } = useMusic();
   
   // Add smooth transition when theme changes
   useEffect(() => {

@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Song, Theme, Language } from '@/types/music';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { usePlaylist } from '@/hooks/usePlaylist';
@@ -15,6 +15,7 @@ interface MusicContextType {
   songs: Song[];
   searchQuery: string;
   filteredSongs: Song[];
+  likedSongs: string[];
   setSearchQuery: (query: string) => void;
   playPause: () => void;
   nextSong: () => void;
@@ -23,6 +24,8 @@ interface MusicContextType {
   setTheme: (theme: Theme) => void;
   setLanguage: (language: Language) => void;
   playSong: (songId: string) => void;
+  toggleLike: (songId: string) => void;
+  isLiked: (songId: string) => boolean;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -53,6 +56,38 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setTheme,
     setLanguage,
   } = useTheme();
+  
+  // State for liked songs
+  const [likedSongs, setLikedSongs] = useState<string[]>([]);
+  
+  // Load liked songs from localStorage on mount
+  useEffect(() => {
+    const storedLikedSongs = localStorage.getItem('likedSongs');
+    if (storedLikedSongs) {
+      setLikedSongs(JSON.parse(storedLikedSongs));
+    }
+  }, []);
+  
+  // Save liked songs to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('likedSongs', JSON.stringify(likedSongs));
+  }, [likedSongs]);
+
+  // Toggle like status for a song
+  const toggleLike = (songId: string) => {
+    setLikedSongs(prev => {
+      if (prev.includes(songId)) {
+        return prev.filter(id => id !== songId);
+      } else {
+        return [...prev, songId];
+      }
+    });
+  };
+  
+  // Check if a song is liked
+  const isLiked = (songId: string) => {
+    return likedSongs.includes(songId);
+  };
 
   // Handle song changes and playback
   const handleNextSong = () => {
@@ -98,6 +133,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     songs: filteredSongs,
     searchQuery,
     filteredSongs,
+    likedSongs,
     setSearchQuery,
     playPause,
     nextSong: handleNextSong,
@@ -106,6 +142,8 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setTheme,
     setLanguage,
     playSong: handlePlaySong,
+    toggleLike,
+    isLiked,
   };
 
   return (

@@ -1,16 +1,23 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
-import { Music, Play, Share2 } from 'lucide-react';
+import { Music, Play, Share2, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import LikeButton from '@/components/LikeButton';
+import { Button } from '@/components/ui/button';
 
 const PlaylistView: React.FC = () => {
-  const { filteredSongs, currentSong, playSong, currentTheme, setSearchQuery } = useMusic();
+  const { filteredSongs, currentSong, playSong, currentTheme, setSearchQuery, likedSongs } = useMusic();
   const { toast } = useToast();
+  const [showLikedOnly, setShowLikedOnly] = useState(false);
+  
+  const displayedSongs = showLikedOnly 
+    ? filteredSongs.filter(song => likedSongs.includes(song.id))
+    : filteredSongs;
 
-  if (filteredSongs.length === 0) {
+  if (displayedSongs.length === 0) {
     return (
       <div className="mt-6 text-center p-8 animate-fade-in">
         <h3 
@@ -25,8 +32,25 @@ const PlaylistView: React.FC = () => {
             }
           )}
         >
-          No songs found
+          {showLikedOnly ? "No liked songs" : "No songs found"}
         </h3>
+        {showLikedOnly && (
+          <Button 
+            onClick={() => setShowLikedOnly(false)}
+            className={cn(
+              "mt-2",
+              {
+                "bg-midnight-accent hover:bg-midnight-accent/90": currentTheme === 'midnight',
+                "bg-ocean-accent hover:bg-ocean-accent/90": currentTheme === 'ocean',
+                "bg-sunset-accent hover:bg-sunset-accent/90": currentTheme === 'sunset',
+                "bg-forest-accent hover:bg-forest-accent/90": currentTheme === 'forest',
+                "bg-candy-accent hover:bg-candy-accent/90": currentTheme === 'candy',
+              }
+            )}
+          >
+            Show All Songs
+          </Button>
+        )}
       </div>
     );
   }
@@ -63,20 +87,39 @@ const PlaylistView: React.FC = () => {
 
   return (
     <div className="mt-6 animate-fade-in">
-      <h3 
-        className={cn(
-          "text-xl font-semibold mb-3",
-          {
-            "text-midnight-text": currentTheme === 'midnight',
-            "text-ocean-text": currentTheme === 'ocean',
-            "text-sunset-text": currentTheme === 'sunset',
-            "text-forest-text": currentTheme === 'forest',
-            "text-candy-text": currentTheme === 'candy',
-          }
-        )}
-      >
-        {filteredSongs.length === 1 ? '1 Song' : `${filteredSongs.length} Songs`}
-      </h3>
+      <div className="flex justify-between items-center mb-3">
+        <h3 
+          className={cn(
+            "text-xl font-semibold",
+            {
+              "text-midnight-text": currentTheme === 'midnight',
+              "text-ocean-text": currentTheme === 'ocean',
+              "text-sunset-text": currentTheme === 'sunset',
+              "text-forest-text": currentTheme === 'forest',
+              "text-candy-text": currentTheme === 'candy',
+            }
+          )}
+        >
+          {displayedSongs.length === 1 ? '1 Song' : `${displayedSongs.length} Songs`}
+        </h3>
+        <Button 
+          variant="outline"
+          onClick={() => setShowLikedOnly(!showLikedOnly)}
+          className={cn(
+            "flex items-center gap-2 text-sm py-1 px-3",
+            {
+              "border-midnight-accent text-midnight-accent": showLikedOnly && currentTheme === 'midnight',
+              "border-ocean-accent text-ocean-accent": showLikedOnly && currentTheme === 'ocean',
+              "border-sunset-accent text-sunset-accent": showLikedOnly && currentTheme === 'sunset',
+              "border-forest-accent text-forest-accent": showLikedOnly && currentTheme === 'forest',
+              "border-candy-accent text-candy-accent": showLikedOnly && currentTheme === 'candy',
+            }
+          )}
+        >
+          <Heart size={16} className={showLikedOnly ? "fill-current" : ""} />
+          {showLikedOnly ? "All Songs" : "Liked Only"}
+        </Button>
+      </div>
       <div 
         className={cn(
           "flex flex-col gap-2 rounded-md overflow-hidden",
@@ -89,7 +132,7 @@ const PlaylistView: React.FC = () => {
           }
         )}
       >
-        {filteredSongs.map((song) => (
+        {displayedSongs.map((song) => (
           <div
             key={song.id}
             className={cn(
@@ -176,8 +219,10 @@ const PlaylistView: React.FC = () => {
               </p>
             </div>
             
-            {/* Share button */}
-            <div className="ml-auto">
+            {/* Action buttons */}
+            <div className="ml-auto flex items-center gap-2">
+              <LikeButton songId={song.id} size={16} />
+              
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
