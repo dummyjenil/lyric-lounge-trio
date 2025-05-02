@@ -19,27 +19,27 @@ const ThemeSelector: React.FC = () => {
     { 
       value: 'midnight', 
       label: 'Midnight', 
-      icon: <div className="w-3 h-3 rounded-full bg-midnight-accent mr-2" />
+      icon: <div className="w-6 h-6 rounded-full bg-gradient-to-r from-midnight-primary to-midnight-accent mr-2 border border-white/20" />
     },
     { 
       value: 'ocean', 
       label: 'Ocean', 
-      icon: <div className="w-3 h-3 rounded-full bg-ocean-accent mr-2" />
+      icon: <div className="w-6 h-6 rounded-full bg-gradient-to-r from-ocean-primary to-ocean-accent mr-2 border border-white/20" />
     },
     { 
       value: 'sunset', 
       label: 'Sunset', 
-      icon: <div className="w-3 h-3 rounded-full bg-sunset-accent mr-2" />
+      icon: <div className="w-6 h-6 rounded-full bg-gradient-to-r from-sunset-primary to-sunset-accent mr-2 border border-white/20" />
     },
     { 
       value: 'forest', 
       label: 'Forest', 
-      icon: <div className="w-3 h-3 rounded-full bg-forest-accent mr-2" />
+      icon: <div className="w-6 h-6 rounded-full bg-gradient-to-r from-forest-primary to-forest-accent mr-2 border border-white/20" />
     },
     { 
       value: 'candy', 
       label: 'Candy', 
-      icon: <div className="w-3 h-3 rounded-full bg-candy-accent mr-2" />
+      icon: <div className="w-6 h-6 rounded-full bg-gradient-to-r from-candy-primary to-candy-accent mr-2 border border-white/20" />
     },
   ];
 
@@ -60,16 +60,19 @@ const ThemeSelector: React.FC = () => {
             }
           )}
         >
-          <Palette className="h-5 w-5" />
+          <Palette className="h-5 w-5 animate-color-shift" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44 animate-fade-in">
+      <DropdownMenuContent align="end" className="w-56 animate-fade-in p-2">
+        <div className="mb-2 px-2 text-sm font-medium text-muted-foreground">
+          Select Theme
+        </div>
         {themes.map((theme) => (
           <DropdownMenuItem
             key={theme.value}
             onClick={() => setTheme(theme.value)}
             className={cn(
-              "cursor-pointer flex items-center transition-all duration-300 hover:scale-105",
+              "cursor-pointer flex items-center transition-all duration-300 hover:scale-105 my-1",
               {
                 "bg-midnight-accent/10 text-midnight-text font-medium": currentTheme === theme.value && theme.value === 'midnight',
                 "bg-ocean-accent/10 text-ocean-text font-medium": currentTheme === theme.value && theme.value === 'ocean',
@@ -80,7 +83,10 @@ const ThemeSelector: React.FC = () => {
             )}
           >
             {theme.icon}
-            {theme.label}
+            <span>{theme.label}</span>
+            {currentTheme === theme.value && (
+              <span className="ml-auto text-xs font-medium opacity-70">Active</span>
+            )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
