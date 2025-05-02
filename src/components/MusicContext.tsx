@@ -1,9 +1,11 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 import { Song, Theme, Language } from '@/types/music';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { usePlaylist } from '@/hooks/usePlaylist';
 import { useTheme } from '@/hooks/useTheme';
+import { LikesProvider, useLikes } from '@/contexts/LikesContext';
+import { ShareProvider } from '@/contexts/ShareContext';
 
 interface MusicContextType {
   currentSong: Song | null;
@@ -30,7 +32,8 @@ interface MusicContextType {
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
 
-export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Inner provider that depends on LikesProvider
+const MusicProviderInner: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { 
     isPlaying, 
     currentTime, 
@@ -57,37 +60,8 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setLanguage,
   } = useTheme();
   
-  // State for liked songs
-  const [likedSongs, setLikedSongs] = useState<string[]>([]);
-  
-  // Load liked songs from localStorage on mount
-  useEffect(() => {
-    const storedLikedSongs = localStorage.getItem('likedSongs');
-    if (storedLikedSongs) {
-      setLikedSongs(JSON.parse(storedLikedSongs));
-    }
-  }, []);
-  
-  // Save liked songs to localStorage when changed
-  useEffect(() => {
-    localStorage.setItem('likedSongs', JSON.stringify(likedSongs));
-  }, [likedSongs]);
-
-  // Toggle like status for a song
-  const toggleLike = (songId: string) => {
-    setLikedSongs(prev => {
-      if (prev.includes(songId)) {
-        return prev.filter(id => id !== songId);
-      } else {
-        return [...prev, songId];
-      }
-    });
-  };
-  
-  // Check if a song is liked
-  const isLiked = (songId: string) => {
-    return likedSongs.includes(songId);
-  };
+  // Get likes functionality from LikesContext
+  const { likedSongs, toggleLike, isLiked } = useLikes();
 
   // Handle song changes and playback
   const handleNextSong = () => {
@@ -105,23 +79,13 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (song) {
       updateAudioSource(song, true);
     }
+    return song;
   };
 
   // Update audio source when current song changes
   React.useEffect(() => {
     updateAudioSource(currentSong);
   }, [currentSong]);
-  
-  // Check URL parameters for shared song
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const type = params.get('type');
-    const data = params.get('data');
-    
-    if (type === 'song_id' && data) {
-      handlePlaySong(data);
-    }
-  }, []);
 
   const contextValue = {
     currentSong,
@@ -150,6 +114,40 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <MusicContext.Provider value={contextValue}>
       {children}
     </MusicContext.Provider>
+  );
+};
+
+// Combined provider that sets up all contexts
+export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <LikesProvider>
+      <InnerWithShare>
+        {children}
+      </InnerWithShare>
+    </LikesProvider>
+  );
+};
+
+// Component to handle share functionality
+const InnerWithShare: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // First render a basic MusicProviderInner
+  return (
+    <MusicProviderInner>
+      <ShareIntegration>
+        {children}
+      </ShareIntegration>
+    </MusicProviderInner>
+  );
+};
+
+// Component that consumes the music context and provides share functionality
+const ShareIntegration: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { playSong } = useMusic();
+  
+  return (
+    <ShareProvider onPlaySong={playSong}>
+      {children}
+    </ShareProvider>
   );
 };
 
