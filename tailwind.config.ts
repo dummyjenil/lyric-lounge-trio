@@ -53,6 +53,41 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Midnight Theme
+        midnight: {
+          primary: "#121636",
+          secondary: "#1e2046",
+          accent: "#bb86fc",
+          text: "#ffffff",
+        },
+        // Ocean Theme
+        ocean: {
+          primary: "#023e8a",
+          secondary: "#0077b6",
+          accent: "#90e0ef",
+          text: "#ffffff",
+        },
+        // Sunset Theme
+        sunset: {
+          primary: "#7d2828",
+          secondary: "#ad5252",
+          accent: "#ffb347",
+          text: "#ffffff",
+        },
+        // Forest Theme
+        forest: {
+          primary: "#1b4332",
+          secondary: "#2d6a4f",
+          accent: "#74c69d",
+          text: "#ffffff",
+        },
+        // Candy Theme
+        candy: {
+          primary: "#9d4edd",
+          secondary: "#c77dff",
+          accent: "#ff9cee",
+          text: "#ffffff",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

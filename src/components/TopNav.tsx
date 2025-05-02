@@ -9,8 +9,13 @@ import { Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const TopNav: React.FC = () => {
-  const { currentTheme, likedSongs } = useMusic();
+  const { currentTheme, likedSongs, setSearchQuery } = useMusic();
   const navigate = useNavigate();
+
+  // Function to show only favorite songs in the playlist
+  const showFavorites = () => {
+    navigate('/favorites');
+  };
 
   return (
     <div 
@@ -43,7 +48,7 @@ const TopNav: React.FC = () => {
           </div>
           
           <Button
-            onClick={() => navigate('/favorites')}
+            onClick={showFavorites}
             variant="ghost"
             size="sm"
             className={cn(
