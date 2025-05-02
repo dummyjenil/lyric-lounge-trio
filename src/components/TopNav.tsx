@@ -4,9 +4,16 @@ import ThemeSelector from './ThemeSelector';
 import SearchBar from './SearchBar';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
+import { Heart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const TopNav: React.FC = () => {
-  const { currentTheme } = useMusic();
+  const { currentTheme, isLiked } = useMusic();
+  const navigate = useNavigate();
+
+  const handleFavoritesClick = () => {
+    navigate('/favorites');
+  };
 
   return (
     <div 
@@ -41,7 +48,37 @@ const TopNav: React.FC = () => {
         <div className="flex-1 mx-4">
           <SearchBar />
         </div>
-        <ThemeSelector />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleFavoritesClick}
+            className={cn(
+              "p-2 rounded-full transition-colors duration-300 hover-scale flex items-center gap-1.5",
+              {
+                "hover:bg-midnight-secondary/30 text-midnight-accent": currentTheme === 'midnight',
+                "hover:bg-ocean-secondary/30 text-ocean-accent": currentTheme === 'ocean',
+                "hover:bg-sunset-secondary/30 text-sunset-accent": currentTheme === 'sunset',
+                "hover:bg-forest-secondary/30 text-forest-accent": currentTheme === 'forest',
+                "hover:bg-candy-secondary/30 text-candy-accent": currentTheme === 'candy',
+              }
+            )}
+          >
+            <Heart 
+              size={20} 
+              className={cn(
+                "transition-all",
+                {
+                  "fill-midnight-accent text-midnight-accent": currentTheme === 'midnight',
+                  "fill-ocean-accent text-ocean-accent": currentTheme === 'ocean',
+                  "fill-sunset-accent text-sunset-accent": currentTheme === 'sunset',
+                  "fill-forest-accent text-forest-accent": currentTheme === 'forest',
+                  "fill-candy-accent text-candy-accent": currentTheme === 'candy',
+                }
+              )}
+            />
+            <span className="hidden sm:inline text-sm font-medium">Favorites</span>
+          </button>
+          <ThemeSelector />
+        </div>
       </div>
     </div>
   );

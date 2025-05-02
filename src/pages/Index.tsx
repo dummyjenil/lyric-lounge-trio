@@ -3,10 +3,14 @@ import React from 'react';
 import { MusicProvider } from '@/components/MusicContext';
 import MusicPlayer from '@/components/MusicPlayer';
 
-const Index = () => {
+interface IndexProps {
+  favorites?: boolean;
+}
+
+const Index = ({ favorites = false }: IndexProps) => {
   return (
     <MusicProvider>
-      <MusicPlayer />
+      <MusicPlayer showFavorites={favorites} />
     </MusicProvider>
   );
 };

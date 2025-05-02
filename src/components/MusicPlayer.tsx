@@ -10,8 +10,12 @@ import PlaylistView from '@/components/PlaylistView';
 import TopNav from '@/components/TopNav';
 import { cn } from '@/lib/utils';
 
-const MusicPlayer: React.FC = () => {
-  const { currentTheme } = useMusic();
+interface MusicPlayerProps {
+  showFavorites?: boolean;
+}
+
+const MusicPlayer: React.FC<MusicPlayerProps> = ({ showFavorites = false }) => {
+  const { currentTheme, filteredSongs, likedSongs } = useMusic();
   
   // Add smooth transition when theme changes
   useEffect(() => {
@@ -35,6 +39,11 @@ const MusicPlayer: React.FC = () => {
         return "bg-gradient-to-br from-candy-primary to-candy-secondary";
     }
   };
+
+  // Filter songs if on favorites page
+  const displaySongs = showFavorites 
+    ? filteredSongs.filter(song => likedSongs.includes(song.id)) 
+    : filteredSongs;
 
   return (
     <div 
@@ -76,7 +85,7 @@ const MusicPlayer: React.FC = () => {
               <div className="hidden md:block">
                 <LanguageSelector />
               </div>
-              <PlaylistView />
+              <PlaylistView songs={displaySongs} showFavorites={showFavorites} />
             </div>
           </div>
         </div>

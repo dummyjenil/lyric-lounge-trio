@@ -2,12 +2,16 @@
 import React from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
-import { Music } from 'lucide-react';
+import { Music, Heart } from 'lucide-react';
 
 const SongInfo: React.FC = () => {
-  const { currentSong, currentTheme } = useMusic();
+  const { currentSong, currentTheme, toggleLike, isLiked, playSongsByArtist } = useMusic();
 
   if (!currentSong) return null;
+
+  const handleArtistClick = () => {
+    playSongsByArtist(currentSong.artist);
+  };
 
   return (
     <div className="text-center py-4 animate-slide-up">
@@ -36,16 +40,36 @@ const SongInfo: React.FC = () => {
           )} 
         />
         {currentSong.title}
+        <button 
+          onClick={() => toggleLike(currentSong.id)}
+          className="ml-2 hover-scale"
+        >
+          <Heart 
+            size={20} 
+            fill={isLiked(currentSong.id) ? 'currentColor' : 'none'}
+            className={cn(
+              "transition-all hover:animate-heart-beat",
+              {
+                "text-midnight-accent": currentTheme === 'midnight',
+                "text-ocean-accent": currentTheme === 'ocean',
+                "text-sunset-accent": currentTheme === 'sunset',
+                "text-forest-accent": currentTheme === 'forest',
+                "text-candy-accent": currentTheme === 'candy',
+              }
+            )} 
+          />
+        </button>
       </h2>
       <p 
+        onClick={handleArtistClick}
         className={cn(
-          "text-lg opacity-80 transition-colors",
+          "text-lg opacity-80 transition-colors cursor-pointer hover:underline inline-block",
           {
-            "text-midnight-text/80": currentTheme === 'midnight',
-            "text-ocean-text/80": currentTheme === 'ocean',
-            "text-sunset-text/80": currentTheme === 'sunset',
-            "text-forest-text/80": currentTheme === 'forest',
-            "text-candy-text/80": currentTheme === 'candy',
+            "text-midnight-text/80 hover:text-midnight-accent": currentTheme === 'midnight',
+            "text-ocean-text/80 hover:text-ocean-accent": currentTheme === 'ocean',
+            "text-sunset-text/80 hover:text-sunset-accent": currentTheme === 'sunset',
+            "text-forest-text/80 hover:text-forest-accent": currentTheme === 'forest',
+            "text-candy-text/80 hover:text-candy-accent": currentTheme === 'candy',
           }
         )}
       >

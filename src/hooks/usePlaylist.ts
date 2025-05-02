@@ -6,13 +6,35 @@ import { songs } from '@/data/songs';
 export const usePlaylist = () => {
   const [currentSong, setCurrentSong] = useState<Song | null>(songs[0] || null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchType, setSearchType] = useState<'all' | 'title' | 'artist' | 'lyrics'>('all');
+  const [filterArtist, setFilterArtist] = useState<string | null>(null);
   
   const filteredSongs = songs.filter(song => {
+    // First, apply artist filter if present
+    if (filterArtist && song.artist.toLowerCase() !== filterArtist.toLowerCase()) {
+      return false;
+    }
+    
     if (!searchQuery.trim()) return true; // Show all songs if search query is empty
     
     const query = searchQuery.toLowerCase().trim();
-    return song.title.toLowerCase().includes(query) || 
-           song.artist.toLowerCase().includes(query);
+    
+    // Then apply search filter based on type
+    switch (searchType) {
+      case 'title':
+        return song.title.toLowerCase().includes(query);
+      case 'artist':
+        return song.artist.toLowerCase().includes(query);
+      case 'lyrics':
+        return song.lyrics?.some(line => 
+          line.toLowerCase().includes(query)
+        ) || false;
+      case 'all':
+      default:
+        return song.title.toLowerCase().includes(query) || 
+               song.artist.toLowerCase().includes(query) ||
+               song.lyrics?.some(line => line.toLowerCase().includes(query)) || false;
+    }
   });
 
   const nextSong = () => {
@@ -38,13 +60,25 @@ export const usePlaylist = () => {
     return null;
   };
 
+  const filterSongsByArtist = (artist: string) => {
+    setFilterArtist(artist);
+  };
+
+  const clearFilters = () => {
+    setFilterArtist(null);
+  };
+
   return {
     currentSong,
     searchQuery,
+    searchType,
     setSearchQuery,
+    setSearchType,
     filteredSongs,
     nextSong,
     prevSong,
     playSong,
+    filterSongsByArtist,
+    clearFilters,
   };
 };

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Song, Theme, Language } from '@/types/music';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
@@ -26,11 +25,13 @@ interface MusicContextType {
   playSong: (songId: string) => void;
   toggleLike: (songId: string) => void;
   isLiked: (songId: string) => boolean;
+  playSongsByArtist: (artist: string) => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
 
 export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  
   const { 
     isPlaying, 
     currentTime, 
@@ -48,6 +49,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     nextSong,
     prevSong,
     playSong: selectSong,
+    filterSongsByArtist,
   } = usePlaylist();
 
   const {
@@ -59,6 +61,8 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   
   // State for liked songs
   const [likedSongs, setLikedSongs] = useState<string[]>([]);
+  
+  
   
   // Load liked songs from localStorage on mount
   useEffect(() => {
@@ -107,6 +111,15 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // New function to filter songs by artist
+  const playSongsByArtist = (artist: string) => {
+    if (artist) {
+      filterSongsByArtist(artist);
+    }
+  };
+
+  
+  
   // Update audio source when current song changes
   React.useEffect(() => {
     updateAudioSource(currentSong);
@@ -144,6 +157,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     playSong: handlePlaySong,
     toggleLike,
     isLiked,
+    playSongsByArtist,
   };
 
   return (
