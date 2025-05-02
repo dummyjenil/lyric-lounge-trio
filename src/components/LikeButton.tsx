@@ -32,7 +32,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId, size = 20, className })
       onClick={handleLike}
       className={cn(
         "relative transition-transform duration-200 outline-none",
-        isAnimating ? "animate-heart-beat" : "",
+        isAnimating ? "animate-scale-up" : "",
         className
       )}
       aria-label={liked ? "Unlike song" : "Like song"}
