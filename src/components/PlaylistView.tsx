@@ -9,7 +9,7 @@ import LikeButton from '@/components/LikeButton';
 import { Button } from '@/components/ui/button';
 
 const PlaylistView: React.FC = () => {
-  const { filteredSongs, currentSong, playSong, currentTheme, setSearchQuery, likedSongs } = useMusic();
+  const { filteredSongs, currentSong, playSong, currentTheme, likedSongs } = useMusic();
   const { toast } = useToast();
   const [showLikedOnly, setShowLikedOnly] = useState(false);
   
@@ -55,10 +55,6 @@ const PlaylistView: React.FC = () => {
     );
   }
 
-  const handleArtistClick = (artist: string) => {
-    setSearchQuery(artist);
-  };
-  
   const handleShareSong = (songId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     
@@ -201,7 +197,7 @@ const PlaylistView: React.FC = () => {
               </h4>
               <p 
                 className={cn(
-                  "text-xs opacity-70 hover:opacity-100 transition-opacity cursor-pointer",
+                  "text-xs opacity-70",
                   {
                     "text-midnight-text": currentTheme === 'midnight',
                     "text-ocean-text": currentTheme === 'ocean',
@@ -210,10 +206,6 @@ const PlaylistView: React.FC = () => {
                     "text-candy-text": currentTheme === 'candy',
                   }
                 )}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleArtistClick(song.artist);
-                }}
               >
                 {song.artist}
               </p>

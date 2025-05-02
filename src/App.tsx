@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import Index from '@/pages/Index';
 import NotFound from '@/pages/NotFound';
+import Favorites from '@/pages/Favorites';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/favorites" element={<Favorites />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
