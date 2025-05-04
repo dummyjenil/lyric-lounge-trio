@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import { Play, Pause, SkipBack, SkipForward, Music2, Share2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Music2, Share2, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import LikeButton from '@/components/LikeButton';
@@ -18,7 +18,9 @@ const PlayerControls: React.FC = () => {
     duration, 
     seek,
     currentTheme,
-    currentSong
+    currentSong,
+    shareCurrentSong,
+    downloadCurrentSong
   } = useMusic();
   
   const { toast } = useToast();
@@ -58,32 +60,6 @@ const PlayerControls: React.FC = () => {
     if (action === 'prev') prevSong();
     if (action === 'play') playPause();
     if (action === 'next') nextSong();
-  };
-
-  const handleShare = () => {
-    if (!currentSong) return;
-    
-    // Create the share URL with song_id parameter
-    const baseUrl = window.location.origin + window.location.pathname;
-    const shareUrl = `${baseUrl}?type=song_id&data=${currentSong.id}`;
-    
-    // Copy to clipboard
-    navigator.clipboard.writeText(shareUrl).then(
-      () => {
-        toast({
-          title: "Link copied!",
-          description: "Share URL has been copied to clipboard",
-        });
-      },
-      (err) => {
-        console.error('Failed to copy: ', err);
-        toast({
-          title: "Copy failed",
-          description: "Failed to copy the URL to clipboard",
-          variant: "destructive"
-        });
-      }
-    );
   };
 
   return (
@@ -248,11 +224,36 @@ const PlayerControls: React.FC = () => {
           <LikeButton songId={currentSong.id} size={20} />
         )}
         
+        {/* Download button */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={downloadCurrentSong}
+              className={cn(
+                "p-2 rounded-full transition-all duration-200 hover:scale-110",
+                {
+                  "text-midnight-accent hover:bg-midnight-secondary/30": currentTheme === 'midnight',
+                  "text-ocean-accent hover:bg-ocean-secondary/30": currentTheme === 'ocean',
+                  "text-sunset-accent hover:bg-sunset-secondary/30": currentTheme === 'sunset',
+                  "text-forest-accent hover:bg-forest-secondary/30": currentTheme === 'forest',
+                  "text-candy-accent hover:bg-candy-secondary/30": currentTheme === 'candy',
+                }
+              )}
+              aria-label="Download song"
+            >
+              <Download size={20} />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Download this song</p>
+          </TooltipContent>
+        </Tooltip>
+        
         {/* Share button */}
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              onClick={handleShare}
+              onClick={shareCurrentSong}
               className={cn(
                 "p-2 rounded-full transition-all duration-200 hover:scale-110",
                 {

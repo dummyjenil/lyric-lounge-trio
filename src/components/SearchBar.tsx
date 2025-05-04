@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Search } from 'lucide-react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
@@ -15,15 +15,18 @@ import {
 type SearchType = 'all' | 'title' | 'artist' | 'lyrics';
 
 const SearchBar = () => {
-  const { currentTheme, searchQuery, setSearchQuery, playSongsByArtist } = useMusic();
-  const [searchType, setSearchType] = useState<SearchType>('all');
+  const { currentTheme, searchQuery, setSearchQuery } = useMusic();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
   const handleSearchTypeChange = (value: string) => {
-    setSearchType(value as SearchType);
+    // Set search type through usePlaylist (handled via MusicContext)
+    if (value === 'all' || value === 'title' || value === 'artist' || value === 'lyrics') {
+      // Access the setSearchType from usePlaylist
+      document.dispatchEvent(new CustomEvent('setSearchType', { detail: value }));
+    }
   };
 
   return (

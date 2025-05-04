@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
@@ -6,11 +7,48 @@ import { Song } from '@/types/music';
 
 interface PlaylistViewProps {
   songs?: Song[];
-  showFavorites?: boolean;
 }
 
-const PlaylistView: React.FC<PlaylistViewProps> = ({ songs, showFavorites }) => {
-  const { currentSong, currentTheme, playSong, toggleLike, isLiked } = useMusic();
+const PlaylistView: React.FC<PlaylistViewProps> = ({ songs }) => {
+  const { currentSong, currentTheme, playSong, toggleLike, isLiked, showFavoritesOnly } = useMusic();
+
+  // Display a message if there are no songs in the playlist
+  if (songs?.length === 0) {
+    return (
+      <div className="py-8 text-center">
+        <h3 
+          className={cn(
+            "text-xl font-bold mb-4 transition-colors",
+            {
+              "text-midnight-text": currentTheme === 'midnight',
+              "text-ocean-text": currentTheme === 'ocean',
+              "text-sunset-text": currentTheme === 'sunset',
+              "text-forest-text": currentTheme === 'forest',
+              "text-candy-text": currentTheme === 'candy',
+            }
+          )}
+        >
+          {showFavoritesOnly ? "Favorites" : "Playlist"}
+        </h3>
+        <p
+          className={cn(
+            "text-md transition-colors",
+            {
+              "text-midnight-text/70": currentTheme === 'midnight',
+              "text-ocean-text/70": currentTheme === 'ocean',
+              "text-sunset-text/70": currentTheme === 'sunset',
+              "text-forest-text/70": currentTheme === 'forest',
+              "text-candy-text/70": currentTheme === 'candy',
+            }
+          )}
+        >
+          {showFavoritesOnly 
+            ? "No favorite songs yet. Click the heart icon on songs to add them to your favorites." 
+            : "No songs match your search criteria."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -26,7 +64,7 @@ const PlaylistView: React.FC<PlaylistViewProps> = ({ songs, showFavorites }) => 
           }
         )}
       >
-        Playlist
+        {showFavoritesOnly ? "Favorites" : "Playlist"}
       </h3>
       <ul>
         {songs?.map(song => (

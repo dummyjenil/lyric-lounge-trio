@@ -1,8 +1,10 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Song, Theme, Language } from '@/types/music';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { usePlaylist } from '@/hooks/usePlaylist';
 import { useTheme } from '@/hooks/useTheme';
+import { useToast } from '@/hooks/use-toast';
 
 interface MusicContextType {
   currentSong: Song | null;
@@ -15,6 +17,7 @@ interface MusicContextType {
   searchQuery: string;
   filteredSongs: Song[];
   likedSongs: string[];
+  showFavoritesOnly: boolean;
   setSearchQuery: (query: string) => void;
   playPause: () => void;
   nextSong: () => void;
@@ -26,6 +29,9 @@ interface MusicContextType {
   toggleLike: (songId: string) => void;
   isLiked: (songId: string) => boolean;
   playSongsByArtist: (artist: string) => void;
+  toggleFavoritesView: () => void;
+  downloadCurrentSong: () => void;
+  shareCurrentSong: () => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -44,7 +50,9 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const {
     currentSong,
     searchQuery,
+    searchType,
     setSearchQuery,
+    setSearchType,
     filteredSongs,
     nextSong,
     prevSong,
@@ -59,10 +67,12 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setLanguage,
   } = useTheme();
   
+  const { toast } = useToast();
+  
   // State for liked songs
   const [likedSongs, setLikedSongs] = useState<string[]>([]);
-  
-  
+  // State for showing favorites only
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState<boolean>(false);
   
   // Load liked songs from localStorage on mount
   useEffect(() => {
@@ -93,6 +103,98 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return likedSongs.includes(songId);
   };
 
+  // Toggle favorites view
+  const toggleFavoritesView = () => {
+    setShowFavoritesOnly(prev => !prev);
+  };
+
+  // Download current song
+  const downloadCurrentSong = () => {
+    if (!currentSong || !currentSong.audioUrl) {
+      toast({
+        title: "Download error",
+        description: "No song available for download",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const link = document.createElement('a');
+    link.href = currentSong.audioUrl;
+    link.download = `${currentSong.title} - ${currentSong.artist}.mp3`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Download started",
+      description: `Downloading ${currentSong.title} by ${currentSong.artist}`,
+    });
+  };
+
+  // Share current song using Web Share API or fallback
+  const shareCurrentSong = async () => {
+    if (!currentSong) return;
+    
+    // Create the share URL with song_id parameter
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${baseUrl}?type=song_id&data=${currentSong.id}`;
+    const shareTitle = `${currentSong.title} by ${currentSong.artist}`;
+    const shareText = `Check out this song: ${currentSong.title} by ${currentSong.artist}`;
+    
+    // Try to use the Web Share API
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+        
+        toast({
+          title: "Shared successfully",
+          description: "Song shared successfully",
+        });
+      } catch (error) {
+        console.error('Share failed:', error);
+        
+        // Fallback to clipboard if share is cancelled or fails
+        navigator.clipboard.writeText(shareUrl).then(
+          () => {
+            toast({
+              title: "Link copied!",
+              description: "Share URL has been copied to clipboard",
+            });
+          },
+          () => {
+            toast({
+              title: "Copy failed",
+              description: "Failed to copy the URL to clipboard",
+              variant: "destructive"
+            });
+          }
+        );
+      }
+    } else {
+      // Fallback to clipboard if Web Share API is not available
+      navigator.clipboard.writeText(shareUrl).then(
+        () => {
+          toast({
+            title: "Link copied!",
+            description: "Share URL has been copied to clipboard",
+          });
+        },
+        () => {
+          toast({
+            title: "Copy failed",
+            description: "Failed to copy the URL to clipboard",
+            variant: "destructive"
+          });
+        }
+      );
+    }
+  };
+
   // Handle song changes and playback
   const handleNextSong = () => {
     const next = nextSong();
@@ -117,8 +219,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       filterSongsByArtist(artist);
     }
   };
-
-  
   
   // Update audio source when current song changes
   React.useEffect(() => {
@@ -147,6 +247,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     searchQuery,
     filteredSongs,
     likedSongs,
+    showFavoritesOnly,
     setSearchQuery,
     playPause,
     nextSong: handleNextSong,
@@ -158,6 +259,9 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     toggleLike,
     isLiked,
     playSongsByArtist,
+    toggleFavoritesView,
+    downloadCurrentSong,
+    shareCurrentSong,
   };
 
   return (

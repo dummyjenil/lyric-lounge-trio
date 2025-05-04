@@ -5,14 +5,12 @@ import SearchBar from './SearchBar';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
 import { Heart } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 const TopNav: React.FC = () => {
-  const { currentTheme, isLiked } = useMusic();
-  const navigate = useNavigate();
+  const { currentTheme, toggleFavoritesView, showFavoritesOnly } = useMusic();
 
   const handleFavoritesClick = () => {
-    navigate('/favorites');
+    toggleFavoritesView();
   };
 
   return (
@@ -54,11 +52,17 @@ const TopNav: React.FC = () => {
             className={cn(
               "p-2 rounded-full transition-colors duration-300 hover-scale flex items-center gap-1.5",
               {
-                "hover:bg-midnight-secondary/30 text-midnight-accent": currentTheme === 'midnight',
-                "hover:bg-ocean-secondary/30 text-ocean-accent": currentTheme === 'ocean',
-                "hover:bg-sunset-secondary/30 text-sunset-accent": currentTheme === 'sunset',
-                "hover:bg-forest-secondary/30 text-forest-accent": currentTheme === 'forest',
-                "hover:bg-candy-secondary/30 text-candy-accent": currentTheme === 'candy',
+                "bg-midnight-accent/20 text-midnight-accent": showFavoritesOnly && currentTheme === 'midnight',
+                "bg-ocean-accent/20 text-ocean-accent": showFavoritesOnly && currentTheme === 'ocean',
+                "bg-sunset-accent/20 text-sunset-accent": showFavoritesOnly && currentTheme === 'sunset',
+                "bg-forest-accent/20 text-forest-accent": showFavoritesOnly && currentTheme === 'forest',
+                "bg-candy-accent/20 text-candy-accent": showFavoritesOnly && currentTheme === 'candy',
+                
+                "hover:bg-midnight-secondary/30 text-midnight-accent": !showFavoritesOnly && currentTheme === 'midnight',
+                "hover:bg-ocean-secondary/30 text-ocean-accent": !showFavoritesOnly && currentTheme === 'ocean',
+                "hover:bg-sunset-secondary/30 text-sunset-accent": !showFavoritesOnly && currentTheme === 'sunset',
+                "hover:bg-forest-secondary/30 text-forest-accent": !showFavoritesOnly && currentTheme === 'forest',
+                "hover:bg-candy-secondary/30 text-candy-accent": !showFavoritesOnly && currentTheme === 'candy',
               }
             )}
           >
@@ -67,11 +71,11 @@ const TopNav: React.FC = () => {
               className={cn(
                 "transition-all",
                 {
-                  "fill-midnight-accent text-midnight-accent": currentTheme === 'midnight',
-                  "fill-ocean-accent text-ocean-accent": currentTheme === 'ocean',
-                  "fill-sunset-accent text-sunset-accent": currentTheme === 'sunset',
-                  "fill-forest-accent text-forest-accent": currentTheme === 'forest',
-                  "fill-candy-accent text-candy-accent": currentTheme === 'candy',
+                  "fill-midnight-accent text-midnight-accent": showFavoritesOnly && currentTheme === 'midnight',
+                  "fill-ocean-accent text-ocean-accent": showFavoritesOnly && currentTheme === 'ocean',
+                  "fill-sunset-accent text-sunset-accent": showFavoritesOnly && currentTheme === 'sunset',
+                  "fill-forest-accent text-forest-accent": showFavoritesOnly && currentTheme === 'forest',
+                  "fill-candy-accent text-candy-accent": showFavoritesOnly && currentTheme === 'candy',
                 }
               )}
             />

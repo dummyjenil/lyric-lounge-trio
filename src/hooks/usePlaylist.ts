@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Song } from '@/types/music';
 import { songs } from '@/data/songs';
 
@@ -8,6 +8,19 @@ export const usePlaylist = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState<'all' | 'title' | 'artist' | 'lyrics'>('all');
   const [filterArtist, setFilterArtist] = useState<string | null>(null);
+  
+  // Listen for search type changes from SearchBar component
+  useEffect(() => {
+    const handleSearchTypeChange = (event: CustomEvent) => {
+      setSearchType(event.detail as 'all' | 'title' | 'artist' | 'lyrics');
+    };
+
+    document.addEventListener('setSearchType', handleSearchTypeChange as EventListener);
+    
+    return () => {
+      document.removeEventListener('setSearchType', handleSearchTypeChange as EventListener);
+    };
+  }, []);
   
   const filteredSongs = songs.filter(song => {
     // First, apply artist filter if present
@@ -26,14 +39,21 @@ export const usePlaylist = () => {
       case 'artist':
         return song.artist.toLowerCase().includes(query);
       case 'lyrics':
-        return song.lyrics?.some(line => 
-          line.toLowerCase().includes(query)
-        ) || false;
+        // Fix: Check if lyrics is an array before using .some
+        return Array.isArray(song.lyrics) ? 
+          song.lyrics.some(line => line.toLowerCase().includes(query)) : 
+          Object.values(song.lyrics || {}).some(text => 
+            typeof text === 'string' && text.toLowerCase().includes(query)
+          );
       case 'all':
       default:
         return song.title.toLowerCase().includes(query) || 
                song.artist.toLowerCase().includes(query) ||
-               song.lyrics?.some(line => line.toLowerCase().includes(query)) || false;
+               (Array.isArray(song.lyrics) ? 
+                song.lyrics.some(line => line.toLowerCase().includes(query)) : 
+                Object.values(song.lyrics || {}).some(text => 
+                  typeof text === 'string' && text.toLowerCase().includes(query)
+                ));
     }
   });
 

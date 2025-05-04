@@ -14,8 +14,8 @@ interface MusicPlayerProps {
   showFavorites?: boolean;
 }
 
-const MusicPlayer: React.FC<MusicPlayerProps> = ({ showFavorites = false }) => {
-  const { currentTheme, filteredSongs, likedSongs } = useMusic();
+const MusicPlayer: React.FC<MusicPlayerProps> = () => {
+  const { currentTheme, filteredSongs, likedSongs, showFavoritesOnly } = useMusic();
   
   // Add smooth transition when theme changes
   useEffect(() => {
@@ -40,8 +40,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ showFavorites = false }) => {
     }
   };
 
-  // Filter songs if on favorites page
-  const displaySongs = showFavorites 
+  // Filter songs if showFavoritesOnly is true
+  const displaySongs = showFavoritesOnly 
     ? filteredSongs.filter(song => likedSongs.includes(song.id)) 
     : filteredSongs;
 
@@ -85,7 +85,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ showFavorites = false }) => {
               <div className="hidden md:block">
                 <LanguageSelector />
               </div>
-              <PlaylistView songs={displaySongs} showFavorites={showFavorites} />
+              <PlaylistView songs={displaySongs} />
             </div>
           </div>
         </div>
