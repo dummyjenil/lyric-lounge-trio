@@ -24,16 +24,28 @@ export const useAudioPlayer = () => {
         setDuration(audioRef.current.duration);
       }
     };
+
+    const handlePlayEvent = () => {
+      setIsPlaying(true);
+    };
+
+    const handlePauseEvent = () => {
+      setIsPlaying(false);
+    };
     
     if (audioRef.current) {
       audioRef.current.addEventListener('timeupdate', updateTime);
       audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audioRef.current.addEventListener('play', handlePlayEvent);
+      audioRef.current.addEventListener('pause', handlePauseEvent);
     }
     
     return () => {
       if (audioRef.current) {
         audioRef.current.removeEventListener('timeupdate', updateTime);
         audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audioRef.current.removeEventListener('play', handlePlayEvent);
+        audioRef.current.removeEventListener('pause', handlePauseEvent);
         audioRef.current.pause();
       }
     };
@@ -62,6 +74,11 @@ export const useAudioPlayer = () => {
 
   const updateAudioSource = (song: Song | null, shouldPlay: boolean = false) => {
     if (song && audioRef.current) {
+      // Pause current audio if playing
+      if (isPlaying) {
+        audioRef.current.pause();
+      }
+      
       audioRef.current.src = song.audioUrl;
       
       if (shouldPlay) {
@@ -73,6 +90,11 @@ export const useAudioPlayer = () => {
             variant: "destructive"
           });
         });
+        // Update isPlaying state to match that we're trying to play
+        setIsPlaying(true);
+      } else {
+        // If not playing, make sure isPlaying is false
+        setIsPlaying(false);
       }
     }
   };
