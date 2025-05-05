@@ -13,6 +13,11 @@ const TopNav: React.FC = () => {
     toggleFavoritesView();
   };
 
+  const handleTitleClick = (e: React.MouseEvent) => {
+    // Prevent default behavior to avoid navigation
+    e.preventDefault();
+  };
+
   return (
     <div 
       className={cn(
@@ -29,8 +34,9 @@ const TopNav: React.FC = () => {
       <div className="container flex items-center justify-between h-16 max-w-screen-2xl mx-auto px-4">
         <div className="flex items-center gap-2">
           <div 
+            onClick={handleTitleClick}
             className={cn(
-              "font-bold text-xl transition-colors",
+              "font-bold text-xl transition-colors cursor-default",
               {
                 "text-midnight-accent": currentTheme === 'midnight',
                 "text-ocean-accent": currentTheme === 'ocean',
