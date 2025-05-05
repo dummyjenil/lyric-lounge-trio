@@ -1,10 +1,10 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Song, Theme, Language } from '@/types/music';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { usePlaylist } from '@/hooks/usePlaylist';
 import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/hooks/use-toast';
+import { songs } from '@/data/songs';
 
 interface MusicContextType {
   currentSong: Song | null;
@@ -32,6 +32,7 @@ interface MusicContextType {
   toggleFavoritesView: () => void;
   downloadCurrentSong: () => void;
   shareCurrentSong: () => void;
+  resetToDefaultSong: () => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -58,6 +59,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     prevSong,
     playSong: selectSong,
     filterSongsByArtist,
+    clearFilters,
   } = usePlaylist();
 
   const {
@@ -195,6 +197,20 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Reset to the default song (first song in the list)
+  const resetToDefaultSong = () => {
+    const defaultSong = songs[0];
+    if (defaultSong) {
+      selectSong(defaultSong.id);
+      updateAudioSource(defaultSong, true);
+    }
+    // Clear any artist filters
+    filterSongsByArtist('');
+    setSearchQuery('');
+    // Ensure we're not in favorites-only mode
+    setShowFavoritesOnly(false);
+  };
+
   // Handle song changes and playback
   const handleNextSong = () => {
     const next = nextSong();
@@ -262,6 +278,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     toggleFavoritesView,
     downloadCurrentSong,
     shareCurrentSong,
+    resetToDefaultSong,
   };
 
   return (

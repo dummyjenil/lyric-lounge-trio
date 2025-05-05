@@ -7,15 +7,15 @@ import { cn } from '@/lib/utils';
 import { Heart } from 'lucide-react';
 
 const TopNav: React.FC = () => {
-  const { currentTheme, toggleFavoritesView, showFavoritesOnly } = useMusic();
+  const { currentTheme, toggleFavoritesView, showFavoritesOnly, resetToDefaultSong } = useMusic();
 
   const handleFavoritesClick = () => {
     toggleFavoritesView();
   };
 
   const handleTitleClick = (e: React.MouseEvent) => {
-    // Prevent default behavior to avoid navigation
-    e.preventDefault();
+    // Reset to default song instead of preventing navigation
+    resetToDefaultSong();
   };
 
   return (
