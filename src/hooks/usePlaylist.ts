@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Song } from '@/types/music';
 import { songs } from '@/data/songs';
@@ -58,17 +57,50 @@ export const usePlaylist = () => {
   });
 
   const nextSong = () => {
-    const currentIndex = songs.findIndex(song => song.id === currentSong?.id);
-    const nextIndex = (currentIndex + 1) % songs.length;
-    setCurrentSong(songs[nextIndex]);
-    return songs[nextIndex];
+    // Get the active playlist based on current filters
+    const activePlaylist = filteredSongs;
+    
+    if (activePlaylist.length === 0) {
+      return null; // No songs in the filtered playlist
+    }
+    
+    // Find current song index in the filtered playlist
+    const currentIndex = activePlaylist.findIndex(song => song.id === currentSong?.id);
+    
+    // If current song is not in the filtered list, play the first song
+    if (currentIndex === -1) {
+      setCurrentSong(activePlaylist[0]);
+      return activePlaylist[0];
+    }
+    
+    // Otherwise, get the next song in the filtered list
+    const nextIndex = (currentIndex + 1) % activePlaylist.length;
+    setCurrentSong(activePlaylist[nextIndex]);
+    return activePlaylist[nextIndex];
   };
 
   const prevSong = () => {
-    const currentIndex = songs.findIndex(song => song.id === currentSong?.id);
-    const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
-    setCurrentSong(songs[prevIndex]);
-    return songs[prevIndex];
+    // Get the active playlist based on current filters
+    const activePlaylist = filteredSongs;
+    
+    if (activePlaylist.length === 0) {
+      return null; // No songs in the filtered playlist
+    }
+    
+    // Find current song index in the filtered playlist
+    const currentIndex = activePlaylist.findIndex(song => song.id === currentSong?.id);
+    
+    // If current song is not in the filtered list, play the last song
+    if (currentIndex === -1) {
+      const lastSong = activePlaylist[activePlaylist.length - 1];
+      setCurrentSong(lastSong);
+      return lastSong;
+    }
+    
+    // Otherwise, get the previous song in the filtered list
+    const prevIndex = (currentIndex - 1 + activePlaylist.length) % activePlaylist.length;
+    setCurrentSong(activePlaylist[prevIndex]);
+    return activePlaylist[prevIndex];
   };
 
   const playSong = (songId: string) => {
