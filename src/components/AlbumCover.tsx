@@ -2,9 +2,18 @@
 import React from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
+import { Share2, Download } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import LikeButton from '@/components/LikeButton';
 
 const AlbumCover: React.FC = () => {
-  const { currentSong, isPlaying, currentTheme } = useMusic();
+  const { 
+    currentSong, 
+    isPlaying, 
+    currentTheme,
+    shareCurrentSong,
+    downloadCurrentSong
+  } = useMusic();
 
   if (!currentSong) return null;
 
@@ -64,6 +73,79 @@ const AlbumCover: React.FC = () => {
             )}
           />
         )}
+      </div>
+
+      {/* Action buttons positioned vertically on the right side */}
+      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-6">
+        {/* Like button */}
+        {currentSong && (
+          <div className="flex justify-center">
+            <LikeButton 
+              songId={currentSong.id} 
+              size={26}
+              className={cn(
+                "bg-black/20 backdrop-blur-sm p-2 rounded-full transition-transform hover:scale-110",
+                {
+                  "hover:bg-midnight-secondary/50": currentTheme === 'midnight',
+                  "hover:bg-ocean-secondary/50": currentTheme === 'ocean',
+                  "hover:bg-sunset-secondary/50": currentTheme === 'sunset',
+                  "hover:bg-forest-secondary/50": currentTheme === 'forest',
+                  "hover:bg-candy-secondary/50": currentTheme === 'candy',
+                }
+              )}
+            />
+          </div>
+        )}
+        
+        {/* Download button */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={downloadCurrentSong}
+              className={cn(
+                "flex items-center justify-center bg-black/20 backdrop-blur-sm p-2 rounded-full transition-transform hover:scale-110",
+                {
+                  "text-midnight-text hover:bg-midnight-secondary/50": currentTheme === 'midnight',
+                  "text-ocean-text hover:bg-ocean-secondary/50": currentTheme === 'ocean',
+                  "text-sunset-text hover:bg-sunset-secondary/50": currentTheme === 'sunset',
+                  "text-forest-text hover:bg-forest-secondary/50": currentTheme === 'forest',
+                  "text-candy-text hover:bg-candy-secondary/50": currentTheme === 'candy',
+                }
+              )}
+              aria-label="Download song"
+            >
+              <Download size={26} />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Download this song</p>
+          </TooltipContent>
+        </Tooltip>
+        
+        {/* Share button */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={shareCurrentSong}
+              className={cn(
+                "flex items-center justify-center bg-black/20 backdrop-blur-sm p-2 rounded-full transition-transform hover:scale-110",
+                {
+                  "text-midnight-text hover:bg-midnight-secondary/50": currentTheme === 'midnight',
+                  "text-ocean-text hover:bg-ocean-secondary/50": currentTheme === 'ocean',
+                  "text-sunset-text hover:bg-sunset-secondary/50": currentTheme === 'sunset',
+                  "text-forest-text hover:bg-forest-secondary/50": currentTheme === 'forest',
+                  "text-candy-text hover:bg-candy-secondary/50": currentTheme === 'candy',
+                }
+              )}
+              aria-label="Share song"
+            >
+              <Share2 size={26} />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Share this song</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );

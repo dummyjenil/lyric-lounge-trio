@@ -62,7 +62,9 @@ const MusicPlayer: React.FC<MusicPlayerProps> = () => {
           <div className="w-full md:w-1/2 lg:w-2/5 p-4 flex flex-col items-center animate-fade-in" style={{ animationDelay: "0.1s" }}>
             <div className="max-w-xs w-full">
               <AlbumCover />
-              <SongInfo />
+              <div className="mb-4">
+                <SongInfo />
+              </div>
               <PlayerControls />
               <div className="md:hidden mt-6">
                 <LanguageSelector />
