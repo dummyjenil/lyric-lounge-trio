@@ -32,13 +32,13 @@ const DownloadProgress: React.FC<DownloadProgressProps> = ({
   return (
     <div 
       className={cn(
-        "fixed bottom-8 right-8 z-50 p-4 rounded-xl shadow-xl w-80 backdrop-blur-lg animate-slide-up",
+        "fixed bottom-8 right-8 z-50 p-4 rounded-xl shadow-lg w-80 backdrop-blur-lg animate-slide-up",
         {
-          "bg-midnight-secondary/80 border border-midnight-accent/30": theme === 'midnight',
-          "bg-ocean-secondary/80 border border-ocean-accent/30": theme === 'ocean',
-          "bg-sunset-secondary/80 border border-sunset-accent/30": theme === 'sunset',
-          "bg-forest-secondary/80 border border-forest-accent/30": theme === 'forest',
-          "bg-candy-secondary/80 border border-candy-accent/30": theme === 'candy',
+          "bg-midnight-secondary/90 border border-midnight-accent/30": theme === 'midnight',
+          "bg-ocean-secondary/90 border border-ocean-accent/30": theme === 'ocean',
+          "bg-sunset-secondary/90 border border-sunset-accent/30": theme === 'sunset',
+          "bg-forest-secondary/90 border border-forest-accent/30": theme === 'forest',
+          "bg-candy-secondary/90 border border-candy-accent/30": theme === 'candy',
         }
       )}
     >
@@ -88,46 +88,6 @@ const DownloadProgress: React.FC<DownloadProgressProps> = ({
             }
           )}
         />
-        
-        {/* Animated glow effect */}
-        <div 
-          className={cn(
-            "absolute top-0 h-3 opacity-70 blur-[3px] rounded-full transition-all duration-500 ease-out",
-            {
-              "bg-midnight-accent": theme === 'midnight',
-              "bg-ocean-accent": theme === 'ocean',
-              "bg-sunset-accent": theme === 'sunset',
-              "bg-forest-accent": theme === 'forest',
-              "bg-candy-accent": theme === 'candy',
-            }
-          )} 
-          style={{ 
-            width: `${progress}%`,
-            opacity: 0.6,
-            transform: `translateX(${progress/10}px)`,
-          }}
-        />
-        
-        {/* Animated progress percentage */}
-        <div 
-          className={cn(
-            "absolute top-0 right-0 font-bold text-xs px-1 rounded transform -translate-y-full mb-1",
-            {
-              "text-midnight-accent": theme === 'midnight',
-              "text-ocean-accent": theme === 'ocean',
-              "text-sunset-accent": theme === 'sunset',
-              "text-forest-accent": theme === 'forest',
-              "text-candy-accent": theme === 'candy',
-            },
-            progress < 5 ? "opacity-0" : "opacity-100"
-          )}
-          style={{
-            transform: `translateY(-8px)`,
-            transition: 'opacity 0.3s ease'
-          }}
-        >
-          {Math.round(progress)}%
-        </div>
       </div>
 
       <div 

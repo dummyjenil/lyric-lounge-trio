@@ -9,6 +9,7 @@ import LanguageSelector from '@/components/LanguageSelector';
 import PlaylistView from '@/components/PlaylistView';
 import TopNav from '@/components/TopNav';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MusicPlayerProps {
   showFavorites?: boolean;
@@ -16,6 +17,7 @@ interface MusicPlayerProps {
 
 const MusicPlayer: React.FC<MusicPlayerProps> = () => {
   const { currentTheme, filteredSongs, likedSongs, showFavoritesOnly } = useMusic();
+  const isMobile = useIsMobile();
   
   // Add smooth transition when theme changes
   useEffect(() => {
@@ -48,7 +50,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = () => {
   return (
     <div 
       className={cn(
-        "min-h-screen flex flex-col w-full animate-fade-in transition-all duration-700 pt-16",
+        "min-h-screen flex flex-col w-full animate-fade-in transition-all duration-700",
+        isMobile ? "pt-20" : "pt-16",
         getBackgroundStyle()
       )}
     >

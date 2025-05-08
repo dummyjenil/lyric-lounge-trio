@@ -24,10 +24,22 @@ const Progress = React.forwardRef<
       }}
     />
     
+    {/* Modified percentage indicator to be inside the progress bar for better visibility */}
+    {value !== undefined && value > 0 && (
+      <div className="absolute inset-0 flex items-center justify-end pr-2">
+        <span 
+          className="text-xs font-semibold text-white drop-shadow-md"
+          style={{opacity: value < 10 ? 0 : 1}}
+        >
+          {Math.round(value)}%
+        </span>
+      </div>
+    )}
+    
     {/* Add animated pulse effect on the indicator edge */}
     {value !== undefined && value > 0 && value < 100 && (
       <span 
-        className="absolute h-full w-2 bg-white/30 animate-pulse" 
+        className="absolute h-full w-1.5 bg-white/30 animate-pulse" 
         style={{ 
           left: `${value}%`, 
           transform: 'translateX(-50%)',
