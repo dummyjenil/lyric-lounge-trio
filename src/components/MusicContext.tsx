@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Song, Theme, Language } from '@/types/music';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
@@ -5,6 +6,7 @@ import { usePlaylist } from '@/hooks/usePlaylist';
 import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/hooks/use-toast';
 import { songs } from '@/data/songs';
+import DownloadProgress from '@/components/DownloadProgress';
 
 interface MusicContextType {
   currentSong: Song | null;
@@ -76,6 +78,39 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // State for showing favorites only
   const [showFavoritesOnly, setShowFavoritesOnly] = useState<boolean>(false);
   
+  // Download progress states
+  const [downloadProgress, setDownloadProgress] = useState<number>(0);
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [downloadStartTime, setDownloadStartTime] = useState<number>(0);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState<number>(0);
+  const [downloadFileName, setDownloadFileName] = useState<string>('');
+  
+  // Interval for updating elapsed time during download
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    
+    if (isDownloading) {
+      interval = setInterval(() => {
+        const elapsed = (Date.now() - downloadStartTime) / 1000;
+        setElapsedTime(elapsed);
+        
+        // Calculate ETA based on current progress and elapsed time
+        if (downloadProgress > 0) {
+          const estimatedTotal = elapsed / (downloadProgress / 100);
+          const remaining = estimatedTotal - elapsed;
+          setEstimatedTimeRemaining(remaining >= 0 ? remaining : 0);
+        }
+      }, 1000);
+    } else if (interval) {
+      clearInterval(interval);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isDownloading, downloadStartTime, downloadProgress]);
+  
   // Load liked songs from localStorage on mount
   useEffect(() => {
     const storedLikedSongs = localStorage.getItem('likedSongs');
@@ -110,7 +145,21 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setShowFavoritesOnly(prev => !prev);
   };
 
-  // Download current song
+  // Cancel download
+  const cancelDownload = () => {
+    setIsDownloading(false);
+    setDownloadProgress(0);
+    setDownloadStartTime(0);
+    setElapsedTime(0);
+    setEstimatedTimeRemaining(0);
+    
+    toast({
+      title: "Download cancelled",
+      description: "The download has been cancelled",
+    });
+  };
+
+  // Download current song with progress tracking
   const downloadCurrentSong = () => {
     if (!currentSong || !currentSong.audioUrl) {
       toast({
@@ -121,13 +170,65 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return;
     }
 
-    const link = document.createElement('a');
-    link.href = currentSong.audioUrl;
-    link.download = `${currentSong.title} - ${currentSong.artist}.mp3`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
+    // Set download states
+    setIsDownloading(true);
+    setDownloadProgress(0);
+    setDownloadStartTime(Date.now());
+    setDownloadFileName(`${currentSong.title} - ${currentSong.artist}.mp3`);
+    
+    // Simulate a fetch request with progress tracking
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', currentSong.audioUrl, true);
+    xhr.responseType = 'blob';
+    
+    xhr.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = (event.loaded / event.total) * 100;
+        setDownloadProgress(percentComplete);
+      }
+    };
+    
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const blob = xhr.response;
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${currentSong.title} - ${currentSong.artist}.mp3`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        
+        // Reset download states
+        setTimeout(() => {
+          setIsDownloading(false);
+          
+          toast({
+            title: "Download complete",
+            description: `${currentSong.title} by ${currentSong.artist} has been downloaded`,
+          });
+        }, 1000); // Keep progress visible briefly after completion
+      } else {
+        setIsDownloading(false);
+        toast({
+          title: "Download failed",
+          description: "There was a problem with the download",
+          variant: "destructive"
+        });
+      }
+    };
+    
+    xhr.onerror = () => {
+      setIsDownloading(false);
+      toast({
+        title: "Download failed",
+        description: "There was a network error",
+        variant: "destructive"
+      });
+    };
+    
+    xhr.send();
+    
     toast({
       title: "Download started",
       description: `Downloading ${currentSong.title} by ${currentSong.artist}`,
@@ -284,6 +385,16 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <MusicContext.Provider value={contextValue}>
       {children}
+      {isDownloading && (
+        <DownloadProgress
+          progress={downloadProgress}
+          fileName={downloadFileName}
+          elapsedTime={elapsedTime}
+          estimatedTimeRemaining={estimatedTimeRemaining}
+          theme={currentTheme}
+          onCancel={cancelDownload}
+        />
+      )}
     </MusicContext.Provider>
   );
 };

@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as ProgressPrimitive from "@radix-ui/react-progress"
 
@@ -16,9 +17,24 @@ const Progress = React.forwardRef<
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className="h-full w-full flex-1 bg-primary transition-all"
-      style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+      className="h-full w-full flex-1 bg-primary transition-all duration-200"
+      style={{ 
+        transform: `translateX(-${100 - (value || 0)}%)`,
+        transition: 'transform 0.3s ease, width 0.3s ease'
+      }}
     />
+    
+    {/* Add animated pulse effect on the indicator edge */}
+    {value !== undefined && value > 0 && value < 100 && (
+      <span 
+        className="absolute h-full w-2 bg-white/30 animate-pulse" 
+        style={{ 
+          left: `${value}%`, 
+          transform: 'translateX(-50%)',
+          animationDuration: '1.5s'
+        }}
+      />
+    )}
   </ProgressPrimitive.Root>
 ))
 Progress.displayName = ProgressPrimitive.Root.displayName
