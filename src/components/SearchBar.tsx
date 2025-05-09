@@ -46,15 +46,15 @@ const SearchBar = () => {
   const getBackgroundStyle = () => {
     switch (currentTheme) {
       case 'midnight':
-        return "from-midnight-primary/80 to-midnight-secondary/90";
+        return "from-midnight-primary/90 to-midnight-secondary/95";
       case 'ocean':
-        return "from-ocean-primary/80 to-ocean-secondary/90";
+        return "from-ocean-primary/90 to-ocean-secondary/95";
       case 'sunset':
-        return "from-sunset-primary/80 to-sunset-secondary/90";
+        return "from-sunset-primary/90 to-sunset-secondary/95";
       case 'forest':
-        return "from-forest-primary/80 to-forest-secondary/90";
+        return "from-forest-primary/90 to-forest-secondary/95";
       case 'candy':
-        return "from-candy-primary/80 to-candy-secondary/90";
+        return "from-candy-primary/90 to-candy-secondary/95";
       default:
         return "from-black/60 to-black/80";
     }
@@ -73,14 +73,14 @@ const SearchBar = () => {
           variant="ghost"
           size="sm" 
           className={cn(
-            "flex items-center justify-center gap-2 shadow-md backdrop-blur-sm w-10 h-10 rounded-full overflow-hidden",
+            "flex items-center justify-center gap-2 shadow-lg backdrop-blur-xl w-10 h-10 rounded-full overflow-hidden",
             "hover:scale-105 transition-transform duration-200",
             {
-              "bg-midnight-secondary/40 text-midnight-accent": currentTheme === 'midnight',
-              "bg-ocean-secondary/40 text-ocean-accent": currentTheme === 'ocean',
-              "bg-sunset-secondary/40 text-sunset-accent": currentTheme === 'sunset',
-              "bg-forest-secondary/40 text-forest-accent": currentTheme === 'forest',
-              "bg-candy-secondary/40 text-candy-accent": currentTheme === 'candy',
+              "bg-midnight-secondary/60 text-midnight-accent border border-midnight-accent/20": currentTheme === 'midnight',
+              "bg-ocean-secondary/60 text-ocean-accent border border-ocean-accent/20": currentTheme === 'ocean',
+              "bg-sunset-secondary/60 text-sunset-accent border border-sunset-accent/20": currentTheme === 'sunset',
+              "bg-forest-secondary/60 text-forest-accent border border-forest-accent/20": currentTheme === 'forest',
+              "bg-candy-secondary/60 text-candy-accent border border-candy-accent/20": currentTheme === 'candy',
             }
           )}
         >
@@ -100,16 +100,16 @@ const SearchBar = () => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          {/* Backdrop */}
+          {/* Backdrop with enhanced blur */}
           <div 
             className={cn(
-              "absolute inset-0 bg-gradient-to-b backdrop-blur-lg",
+              "absolute inset-0 bg-gradient-to-b backdrop-blur-xl",
               getBackgroundStyle()
             )}
             onClick={() => setShowSearchOnMobile(false)}
           />
           
-          {/* Search UI for mobile */}
+          {/* Search UI for mobile with improved visual clarity */}
           <motion.div 
             className="relative w-full max-w-md flex flex-col gap-3 z-10"
             initial={{ y: -20, opacity: 0 }}
@@ -159,13 +159,13 @@ const SearchBar = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className={cn(
-                  "w-full pl-10 pr-4 h-12 text-base rounded-xl transition-colors bg-white/10 border-0 focus-visible:ring-2",
+                  "w-full pl-10 pr-4 h-12 text-base rounded-xl transition-colors backdrop-blur-xl border-[1.5px] shadow-lg",
                   {
-                    "placeholder:text-midnight-text/50 focus-visible:ring-midnight-accent": currentTheme === 'midnight',
-                    "placeholder:text-ocean-text/50 focus-visible:ring-ocean-accent": currentTheme === 'ocean',
-                    "placeholder:text-sunset-text/50 focus-visible:ring-sunset-accent": currentTheme === 'sunset',
-                    "placeholder:text-forest-text/50 focus-visible:ring-forest-accent": currentTheme === 'forest',
-                    "placeholder:text-candy-text/50 focus-visible:ring-candy-accent": currentTheme === 'candy',
+                    "bg-midnight-secondary/30 placeholder:text-midnight-text/50 border-midnight-accent/30 focus-visible:ring-midnight-accent/50": currentTheme === 'midnight',
+                    "bg-ocean-secondary/30 placeholder:text-ocean-text/50 border-ocean-accent/30 focus-visible:ring-ocean-accent/50": currentTheme === 'ocean',
+                    "bg-sunset-secondary/30 placeholder:text-sunset-text/50 border-sunset-accent/30 focus-visible:ring-sunset-accent/50": currentTheme === 'sunset',
+                    "bg-forest-secondary/30 placeholder:text-forest-text/50 border-forest-accent/30 focus-visible:ring-forest-accent/50": currentTheme === 'forest',
+                    "bg-candy-secondary/30 placeholder:text-candy-text/50 border-candy-accent/30 focus-visible:ring-candy-accent/50": currentTheme === 'candy',
                   }
                 )}
               />
@@ -174,19 +174,19 @@ const SearchBar = () => {
             <Select onValueChange={handleSearchTypeChange} defaultValue="all">
               <SelectTrigger 
                 className={cn(
-                  "h-12 transition-colors bg-white/10 border-0 focus-visible:ring-2 rounded-xl",
+                  "h-12 transition-colors backdrop-blur-xl border-[1.5px] shadow-lg rounded-xl",
                   {
-                    "focus-visible:ring-midnight-accent": currentTheme === 'midnight',
-                    "focus-visible:ring-ocean-accent": currentTheme === 'ocean',
-                    "focus-visible:ring-sunset-accent": currentTheme === 'sunset',
-                    "focus-visible:ring-forest-accent": currentTheme === 'forest',
-                    "focus-visible:ring-candy-accent": currentTheme === 'candy',
+                    "bg-midnight-secondary/30 border-midnight-accent/30 focus-visible:ring-midnight-accent/50": currentTheme === 'midnight',
+                    "bg-ocean-secondary/30 border-ocean-accent/30 focus-visible:ring-ocean-accent/50": currentTheme === 'ocean',
+                    "bg-sunset-secondary/30 border-sunset-accent/30 focus-visible:ring-sunset-accent/50": currentTheme === 'sunset',
+                    "bg-forest-secondary/30 border-forest-accent/30 focus-visible:ring-forest-accent/50": currentTheme === 'forest',
+                    "bg-candy-secondary/30 border-candy-accent/30 focus-visible:ring-candy-accent/50": currentTheme === 'candy',
                   }
                 )}
               >
                 <SelectValue placeholder="Search by" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="backdrop-blur-xl border-[1.5px]">
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="title">Title</SelectItem>
                 <SelectItem value="artist">Artist</SelectItem>
@@ -216,13 +216,13 @@ const SearchBar = () => {
               value={searchQuery}
               onChange={handleSearchChange}
               className={cn(
-                "w-full pl-10 pr-4 h-9 text-sm transition-colors bg-white/10 border-0 focus-visible:ring-1 rounded-r-none",
+                "w-full pl-10 pr-4 h-10 text-sm transition-colors backdrop-blur-md border-[1px] rounded-l-xl",
                 {
-                  "placeholder:text-midnight-text/50 focus-visible:ring-midnight-accent": currentTheme === 'midnight',
-                  "placeholder:text-ocean-text/50 focus-visible:ring-ocean-accent": currentTheme === 'ocean',
-                  "placeholder:text-sunset-text/50 focus-visible:ring-sunset-accent": currentTheme === 'sunset',
-                  "placeholder:text-forest-text/50 focus-visible:ring-forest-accent": currentTheme === 'forest',
-                  "placeholder:text-candy-text/50 focus-visible:ring-candy-accent": currentTheme === 'candy',
+                  "bg-midnight-secondary/30 placeholder:text-midnight-text/50 border-midnight-accent/30 focus-visible:ring-midnight-accent/50": currentTheme === 'midnight',
+                  "bg-ocean-secondary/30 placeholder:text-ocean-text/50 border-ocean-accent/30 focus-visible:ring-ocean-accent/50": currentTheme === 'ocean',
+                  "bg-sunset-secondary/30 placeholder:text-sunset-text/50 border-sunset-accent/30 focus-visible:ring-sunset-accent/50": currentTheme === 'sunset',
+                  "bg-forest-secondary/30 placeholder:text-forest-text/50 border-forest-accent/30 focus-visible:ring-forest-accent/50": currentTheme === 'forest',
+                  "bg-candy-secondary/30 placeholder:text-candy-text/50 border-candy-accent/30 focus-visible:ring-candy-accent/50": currentTheme === 'candy',
                 }
               )}
             />
@@ -231,13 +231,13 @@ const SearchBar = () => {
           <Select onValueChange={handleSearchTypeChange} defaultValue="all">
             <SelectTrigger 
               className={cn(
-                "h-9 transition-colors bg-white/10 border-0 focus-visible:ring-1 w-32 rounded-l-none",
+                "h-10 transition-colors backdrop-blur-md border-[1px] w-32 rounded-l-none rounded-r-xl",
                 {
-                  "focus-visible:ring-midnight-accent": currentTheme === 'midnight',
-                  "focus-visible:ring-ocean-accent": currentTheme === 'ocean',
-                  "focus-visible:ring-sunset-accent": currentTheme === 'sunset',
-                  "focus-visible:ring-forest-accent": currentTheme === 'forest',
-                  "focus-visible:ring-candy-accent": currentTheme === 'candy',
+                  "bg-midnight-secondary/30 border-midnight-accent/30 focus-visible:ring-midnight-accent/50": currentTheme === 'midnight',
+                  "bg-ocean-secondary/30 border-ocean-accent/30 focus-visible:ring-ocean-accent/50": currentTheme === 'ocean',
+                  "bg-sunset-secondary/30 border-sunset-accent/30 focus-visible:ring-sunset-accent/50": currentTheme === 'sunset',
+                  "bg-forest-secondary/30 border-forest-accent/30 focus-visible:ring-forest-accent/50": currentTheme === 'forest',
+                  "bg-candy-secondary/30 border-candy-accent/30 focus-visible:ring-candy-accent/50": currentTheme === 'candy',
                 }
               )}
             >

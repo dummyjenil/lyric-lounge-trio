@@ -23,7 +23,7 @@ const TopNav: React.FC = () => {
   return (
     <div 
       className={cn(
-        "w-full backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 z-20 fixed top-0 left-0 right-0 border-b transition-colors duration-300",
+        "w-full backdrop-blur-xl supports-[backdrop-filter]:bg-background/20 z-20 fixed top-0 left-0 right-0 border-b transition-colors duration-300",
         {
           "border-midnight-secondary/30": currentTheme === 'midnight',
           "border-ocean-secondary/30": currentTheme === 'ocean',
@@ -63,19 +63,19 @@ const TopNav: React.FC = () => {
           <button
             onClick={handleFavoritesClick}
             className={cn(
-              "p-2 rounded-full transition-colors duration-300 hover-scale flex items-center gap-1.5",
+              "p-2 rounded-full transition-colors duration-300 hover-scale flex items-center gap-1.5 shadow-lg",
               {
-                "bg-midnight-accent/20 text-midnight-accent": showFavoritesOnly && currentTheme === 'midnight',
-                "bg-ocean-accent/20 text-ocean-accent": showFavoritesOnly && currentTheme === 'ocean',
-                "bg-sunset-accent/20 text-sunset-accent": showFavoritesOnly && currentTheme === 'sunset',
-                "bg-forest-accent/20 text-forest-accent": showFavoritesOnly && currentTheme === 'forest',
-                "bg-candy-accent/20 text-candy-accent": showFavoritesOnly && currentTheme === 'candy',
+                "bg-midnight-accent/30 text-midnight-accent": showFavoritesOnly && currentTheme === 'midnight',
+                "bg-ocean-accent/30 text-ocean-accent": showFavoritesOnly && currentTheme === 'ocean',
+                "bg-sunset-accent/30 text-sunset-accent": showFavoritesOnly && currentTheme === 'sunset',
+                "bg-forest-accent/30 text-forest-accent": showFavoritesOnly && currentTheme === 'forest',
+                "bg-candy-accent/30 text-candy-accent": showFavoritesOnly && currentTheme === 'candy',
                 
-                "hover:bg-midnight-secondary/30 text-midnight-accent": !showFavoritesOnly && currentTheme === 'midnight',
-                "hover:bg-ocean-secondary/30 text-ocean-accent": !showFavoritesOnly && currentTheme === 'ocean',
-                "hover:bg-sunset-secondary/30 text-sunset-accent": !showFavoritesOnly && currentTheme === 'sunset',
-                "hover:bg-forest-secondary/30 text-forest-accent": !showFavoritesOnly && currentTheme === 'forest',
-                "hover:bg-candy-secondary/30 text-candy-accent": !showFavoritesOnly && currentTheme === 'candy',
+                "bg-midnight-secondary/20 hover:bg-midnight-secondary/40 text-midnight-accent": !showFavoritesOnly && currentTheme === 'midnight',
+                "bg-ocean-secondary/20 hover:bg-ocean-secondary/40 text-ocean-accent": !showFavoritesOnly && currentTheme === 'ocean',
+                "bg-sunset-secondary/20 hover:bg-sunset-secondary/40 text-sunset-accent": !showFavoritesOnly && currentTheme === 'sunset',
+                "bg-forest-secondary/20 hover:bg-forest-secondary/40 text-forest-accent": !showFavoritesOnly && currentTheme === 'forest',
+                "bg-candy-secondary/20 hover:bg-candy-secondary/40 text-candy-accent": !showFavoritesOnly && currentTheme === 'candy',
               }
             )}
           >
