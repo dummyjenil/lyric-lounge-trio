@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -94,7 +94,7 @@ const SearchBar = () => {
     <AnimatePresence>
       {(isMobile && showSearchOnMobile) ? (
         <motion.div 
-          className="fixed inset-0 z-50 px-4 py-16 flex flex-col items-center"
+          className="fixed inset-0 z-50 px-4 py-16 flex flex-col items-center justify-start"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -176,17 +176,26 @@ const SearchBar = () => {
                 className={cn(
                   "h-12 transition-colors backdrop-blur-xl border-[1.5px] shadow-lg rounded-xl",
                   {
-                    "bg-midnight-secondary/30 border-midnight-accent/30 focus-visible:ring-midnight-accent/50": currentTheme === 'midnight',
-                    "bg-ocean-secondary/30 border-ocean-accent/30 focus-visible:ring-ocean-accent/50": currentTheme === 'ocean',
-                    "bg-sunset-secondary/30 border-sunset-accent/30 focus-visible:ring-sunset-accent/50": currentTheme === 'sunset',
-                    "bg-forest-secondary/30 border-forest-accent/30 focus-visible:ring-forest-accent/50": currentTheme === 'forest',
-                    "bg-candy-secondary/30 border-candy-accent/30 focus-visible:ring-candy-accent/50": currentTheme === 'candy',
+                    "bg-midnight-secondary/50 border-midnight-accent/30 focus-visible:ring-midnight-accent/50 text-midnight-text": currentTheme === 'midnight',
+                    "bg-ocean-secondary/50 border-ocean-accent/30 focus-visible:ring-ocean-accent/50 text-ocean-text": currentTheme === 'ocean',
+                    "bg-sunset-secondary/50 border-sunset-accent/30 focus-visible:ring-sunset-accent/50 text-sunset-text": currentTheme === 'sunset',
+                    "bg-forest-secondary/50 border-forest-accent/30 focus-visible:ring-forest-accent/50 text-forest-text": currentTheme === 'forest',
+                    "bg-candy-secondary/50 border-candy-accent/30 focus-visible:ring-candy-accent/50 text-candy-text": currentTheme === 'candy',
                   }
                 )}
               >
                 <SelectValue placeholder="Search by" />
               </SelectTrigger>
-              <SelectContent className="backdrop-blur-xl border-[1.5px]">
+              <SelectContent className={cn(
+                "backdrop-blur-xl border-[1.5px]",
+                {
+                  "bg-midnight-secondary/80 border-midnight-accent/30": currentTheme === 'midnight',
+                  "bg-ocean-secondary/80 border-ocean-accent/30": currentTheme === 'ocean',
+                  "bg-sunset-secondary/80 border-sunset-accent/30": currentTheme === 'sunset',
+                  "bg-forest-secondary/80 border-forest-accent/30": currentTheme === 'forest',
+                  "bg-candy-secondary/80 border-candy-accent/30": currentTheme === 'candy',
+                }
+              )}>
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="title">Title</SelectItem>
                 <SelectItem value="artist">Artist</SelectItem>
@@ -216,13 +225,13 @@ const SearchBar = () => {
               value={searchQuery}
               onChange={handleSearchChange}
               className={cn(
-                "w-full pl-10 pr-4 h-10 text-sm transition-colors backdrop-blur-md border-[1px] rounded-l-xl",
+                "w-full pl-10 pr-4 h-10 text-sm transition-colors backdrop-blur-xl border-[1px] rounded-l-xl",
                 {
-                  "bg-midnight-secondary/30 placeholder:text-midnight-text/50 border-midnight-accent/30 focus-visible:ring-midnight-accent/50": currentTheme === 'midnight',
-                  "bg-ocean-secondary/30 placeholder:text-ocean-text/50 border-ocean-accent/30 focus-visible:ring-ocean-accent/50": currentTheme === 'ocean',
-                  "bg-sunset-secondary/30 placeholder:text-sunset-text/50 border-sunset-accent/30 focus-visible:ring-sunset-accent/50": currentTheme === 'sunset',
-                  "bg-forest-secondary/30 placeholder:text-forest-text/50 border-forest-accent/30 focus-visible:ring-forest-accent/50": currentTheme === 'forest',
-                  "bg-candy-secondary/30 placeholder:text-candy-text/50 border-candy-accent/30 focus-visible:ring-candy-accent/50": currentTheme === 'candy',
+                  "bg-midnight-secondary/50 placeholder:text-midnight-text/60 border-midnight-accent/40 focus-visible:ring-midnight-accent/50": currentTheme === 'midnight',
+                  "bg-ocean-secondary/50 placeholder:text-ocean-text/60 border-ocean-accent/40 focus-visible:ring-ocean-accent/50": currentTheme === 'ocean',
+                  "bg-sunset-secondary/50 placeholder:text-sunset-text/60 border-sunset-accent/40 focus-visible:ring-sunset-accent/50": currentTheme === 'sunset',
+                  "bg-forest-secondary/50 placeholder:text-forest-text/60 border-forest-accent/40 focus-visible:ring-forest-accent/50": currentTheme === 'forest',
+                  "bg-candy-secondary/50 placeholder:text-candy-text/60 border-candy-accent/40 focus-visible:ring-candy-accent/50": currentTheme === 'candy',
                 }
               )}
             />
@@ -231,19 +240,28 @@ const SearchBar = () => {
           <Select onValueChange={handleSearchTypeChange} defaultValue="all">
             <SelectTrigger 
               className={cn(
-                "h-10 transition-colors backdrop-blur-md border-[1px] w-32 rounded-l-none rounded-r-xl",
+                "h-10 transition-colors backdrop-blur-xl border-[1px] w-32 rounded-l-none rounded-r-xl",
                 {
-                  "bg-midnight-secondary/30 border-midnight-accent/30 focus-visible:ring-midnight-accent/50": currentTheme === 'midnight',
-                  "bg-ocean-secondary/30 border-ocean-accent/30 focus-visible:ring-ocean-accent/50": currentTheme === 'ocean',
-                  "bg-sunset-secondary/30 border-sunset-accent/30 focus-visible:ring-sunset-accent/50": currentTheme === 'sunset',
-                  "bg-forest-secondary/30 border-forest-accent/30 focus-visible:ring-forest-accent/50": currentTheme === 'forest',
-                  "bg-candy-secondary/30 border-candy-accent/30 focus-visible:ring-candy-accent/50": currentTheme === 'candy',
+                  "bg-midnight-secondary/50 border-midnight-accent/40 focus-visible:ring-midnight-accent/50 text-midnight-text": currentTheme === 'midnight',
+                  "bg-ocean-secondary/50 border-ocean-accent/40 focus-visible:ring-ocean-accent/50 text-ocean-text": currentTheme === 'ocean',
+                  "bg-sunset-secondary/50 border-sunset-accent/40 focus-visible:ring-sunset-accent/50 text-sunset-text": currentTheme === 'sunset',
+                  "bg-forest-secondary/50 border-forest-accent/40 focus-visible:ring-forest-accent/50 text-forest-text": currentTheme === 'forest',
+                  "bg-candy-secondary/50 border-candy-accent/40 focus-visible:ring-candy-accent/50 text-candy-text": currentTheme === 'candy',
                 }
               )}
             >
               <SelectValue placeholder="Search by" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={cn(
+              "backdrop-blur-xl border-[1px]",
+              {
+                "bg-midnight-secondary/80 border-midnight-accent/30": currentTheme === 'midnight',
+                "bg-ocean-secondary/80 border-ocean-accent/30": currentTheme === 'ocean',
+                "bg-sunset-secondary/80 border-sunset-accent/30": currentTheme === 'sunset',
+                "bg-forest-secondary/80 border-forest-accent/30": currentTheme === 'forest',
+                "bg-candy-secondary/80 border-candy-accent/30": currentTheme === 'candy',
+              }
+            )}>
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="title">Title</SelectItem>
               <SelectItem value="artist">Artist</SelectItem>

@@ -63,7 +63,7 @@ const TopNav: React.FC = () => {
           <button
             onClick={handleFavoritesClick}
             className={cn(
-              "p-2 rounded-full transition-colors duration-300 hover-scale flex items-center gap-1.5 shadow-lg",
+              "p-2 rounded-full transition-colors duration-300 hover-scale flex items-center gap-1.5 shadow-lg backdrop-blur-xl",
               {
                 "bg-midnight-accent/30 text-midnight-accent": showFavoritesOnly && currentTheme === 'midnight',
                 "bg-ocean-accent/30 text-ocean-accent": showFavoritesOnly && currentTheme === 'ocean',
