@@ -5,9 +5,11 @@ import SearchBar from './SearchBar';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
 import { Heart } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const TopNav: React.FC = () => {
   const { currentTheme, toggleFavoritesView, showFavoritesOnly, resetToDefaultSong } = useMusic();
+  const isMobile = useIsMobile();
 
   const handleFavoritesClick = () => {
     toggleFavoritesView();
@@ -49,9 +51,14 @@ const TopNav: React.FC = () => {
             Lyric Lounge
           </div>
         </div>
-        <div className="flex-1 mx-4">
+        
+        <div className={cn(
+          "flex-1 mx-4",
+          isMobile && "flex justify-center"
+        )}>
           <SearchBar />
         </div>
+        
         <div className="flex items-center gap-3">
           <button
             onClick={handleFavoritesClick}
