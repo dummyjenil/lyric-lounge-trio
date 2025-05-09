@@ -31,19 +31,19 @@ const MobileSearch: React.FC<MobileSearchProps> = ({
     }
   }, []);
 
-  // Background style based on current theme
+  // Background style based on current theme with improved blur effect
   const getBackgroundStyle = () => {
     switch (currentTheme) {
       case 'midnight':
-        return "from-midnight-primary/90 to-midnight-secondary/95";
+        return "from-midnight-primary/80 to-midnight-secondary/90";
       case 'ocean':
-        return "from-ocean-primary/90 to-ocean-secondary/95";
+        return "from-ocean-primary/80 to-ocean-secondary/90";
       case 'sunset':
-        return "from-sunset-primary/90 to-sunset-secondary/95";
+        return "from-sunset-primary/80 to-sunset-secondary/90";
       case 'forest':
-        return "from-forest-primary/90 to-forest-secondary/95";
+        return "from-forest-primary/80 to-forest-secondary/90";
       case 'candy':
-        return "from-candy-primary/90 to-candy-secondary/95";
+        return "from-candy-primary/80 to-candy-secondary/90";
       default:
         return "from-black/60 to-black/80";
     }
@@ -57,10 +57,10 @@ const MobileSearch: React.FC<MobileSearchProps> = ({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      {/* Backdrop with enhanced blur */}
+      {/* Enhanced backdrop with stronger blur effect */}
       <div 
         className={cn(
-          "absolute inset-0 bg-gradient-to-b backdrop-blur-xl",
+          "absolute inset-0 bg-gradient-to-b backdrop-blur-2xl",
           getBackgroundStyle()
         )}
         onClick={onClose}
@@ -116,14 +116,15 @@ const MobileSearch: React.FC<MobileSearchProps> = ({
             value={searchQuery}
             onChange={onSearchChange}
             className={cn(
-              "w-full pl-10 pr-4 h-12 text-base rounded-xl transition-colors backdrop-blur-xl border-[1.5px] shadow-lg",
+              "w-full pl-10 pr-4 h-12 text-base rounded-xl transition-colors shadow-lg",
               {
-                "bg-midnight-secondary/30 placeholder:text-midnight-text/50 border-midnight-accent/30 focus-visible:ring-midnight-accent/50": currentTheme === 'midnight',
-                "bg-ocean-secondary/30 placeholder:text-ocean-text/50 border-ocean-accent/30 focus-visible:ring-ocean-accent/50": currentTheme === 'ocean',
-                "bg-sunset-secondary/30 placeholder:text-sunset-text/50 border-sunset-accent/30 focus-visible:ring-sunset-accent/50": currentTheme === 'sunset',
-                "bg-forest-secondary/30 placeholder:text-forest-text/50 border-forest-accent/30 focus-visible:ring-forest-accent/50": currentTheme === 'forest',
-                "bg-candy-secondary/30 placeholder:text-candy-text/50 border-candy-accent/30 focus-visible:ring-candy-accent/50": currentTheme === 'candy',
-              }
+                "bg-midnight-secondary/40 placeholder:text-midnight-text/60 border-midnight-accent/30 focus-visible:ring-midnight-accent/50": currentTheme === 'midnight',
+                "bg-ocean-secondary/40 placeholder:text-ocean-text/60 border-ocean-accent/30 focus-visible:ring-ocean-accent/50": currentTheme === 'ocean',
+                "bg-sunset-secondary/40 placeholder:text-sunset-text/60 border-sunset-accent/30 focus-visible:ring-sunset-accent/50": currentTheme === 'sunset',
+                "bg-forest-secondary/40 placeholder:text-forest-text/60 border-forest-accent/30 focus-visible:ring-forest-accent/50": currentTheme === 'forest',
+                "bg-candy-secondary/40 placeholder:text-candy-text/60 border-candy-accent/30 focus-visible:ring-candy-accent/50": currentTheme === 'candy',
+              },
+              "backdrop-blur-md border-[1.5px]"
             )}
           />
         </div>
