@@ -111,6 +111,8 @@ const MobileSearch: React.FC<MobileSearchProps> = ({
           />
           <Input
             ref={inputRef}
+            id="mobile-search-input"
+            name="mobile-search"
             type="search"
             placeholder="Search songs, artists, lyrics..."
             value={searchQuery}
@@ -126,6 +128,7 @@ const MobileSearch: React.FC<MobileSearchProps> = ({
               },
               "backdrop-blur-md border-[1.5px]"
             )}
+            aria-label="Search for songs, artists, or lyrics"
           />
         </div>
         
