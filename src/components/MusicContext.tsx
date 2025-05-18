@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Song, Theme, Language } from '@/types/music';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
@@ -32,7 +31,7 @@ interface MusicContextType {
   isLiked: (songId: string) => boolean;
   playSongsByArtist: (artist: string) => void;
   toggleFavoritesView: () => void;
-  downloadCurrentSong: () => void;
+  downloadCurrentSong: (format?: 'mp3' | 'opus') => void; // Updated to accept optional format parameter
   shareCurrentSong: () => void;
   resetToDefaultSong: () => void;
 }
@@ -159,8 +158,8 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
   };
 
-  // Download current song with progress tracking
-  const downloadCurrentSong = () => {
+  // Update the downloadCurrentSong implementation
+  const downloadCurrentSong = (format: 'mp3' | 'opus' = 'mp3') => {
     if (!currentSong || !currentSong.audioUrl) {
       toast({
         title: "Download error",
@@ -174,7 +173,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setIsDownloading(true);
     setDownloadProgress(0);
     setDownloadStartTime(Date.now());
-    setDownloadFileName(`${currentSong.title} - ${currentSong.artist}.mp3`);
+    setDownloadFileName(`${currentSong.title} - ${currentSong.artist}.${format}`);
     
     // Simulate a fetch request with progress tracking
     const xhr = new XMLHttpRequest();
@@ -193,7 +192,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const blob = xhr.response;
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `${currentSong.title} - ${currentSong.artist}.mp3`;
+        link.download = `${currentSong.title} - ${currentSong.artist}.${format}`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -377,7 +376,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     isLiked,
     playSongsByArtist,
     toggleFavoritesView,
-    downloadCurrentSong,
+    downloadCurrentSong, // Updated function with format support
     shareCurrentSong,
     resetToDefaultSong,
   };

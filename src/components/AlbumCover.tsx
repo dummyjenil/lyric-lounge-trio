@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
@@ -26,7 +25,7 @@ const AlbumCover: React.FC = () => {
 
   const handleDownload = (format: 'mp3' | 'opus') => {
     setDownloadFormat(format);
-    downloadCurrentSong(format);
+    downloadCurrentSong(); // Removed the argument here as it's not expected
   };
 
   return (
@@ -83,7 +82,7 @@ const AlbumCover: React.FC = () => {
           />
         )}
       </div>
-
+      
       {/* Action buttons positioned vertically on the right side */}
       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-6">
         {/* Like button */}
