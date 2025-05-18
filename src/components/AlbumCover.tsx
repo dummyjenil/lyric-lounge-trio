@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
-import { Share2, Download } from 'lucide-react';
+import { Share2, Download, Music2, FileAudio } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import LikeButton from '@/components/LikeButton';
 
 const AlbumCover: React.FC = () => {
@@ -15,10 +16,18 @@ const AlbumCover: React.FC = () => {
     downloadCurrentSong
   } = useMusic();
 
+  // State for download format
+  const [downloadFormat, setDownloadFormat] = useState<'mp3' | 'opus'>('mp3');
+
   if (!currentSong) return null;
 
   // Fallback to placeholder image if cover not available
   const coverSrc = currentSong.cover || '/placeholder.svg';
+
+  const handleDownload = (format: 'mp3' | 'opus') => {
+    setDownloadFormat(format);
+    downloadCurrentSong(format);
+  };
 
   return (
     <div className="w-full aspect-square overflow-hidden rounded-2xl relative group">
@@ -97,11 +106,10 @@ const AlbumCover: React.FC = () => {
           </div>
         )}
         
-        {/* Download button */}
-        <Tooltip>
-          <TooltipTrigger asChild>
+        {/* Download button with options */}
+        <Popover>
+          <PopoverTrigger asChild>
             <button
-              onClick={downloadCurrentSong}
               className={cn(
                 "flex items-center justify-center bg-black/20 backdrop-blur-sm p-2 rounded-full transition-transform hover:scale-110",
                 {
@@ -116,11 +124,89 @@ const AlbumCover: React.FC = () => {
             >
               <Download size={26} />
             </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Download this song</p>
-          </TooltipContent>
-        </Tooltip>
+          </PopoverTrigger>
+          <PopoverContent 
+            className={cn(
+              "w-48 p-0 animate-scale-up backdrop-blur-lg border-none rounded-xl shadow-xl",
+              {
+                "bg-midnight-secondary/90": currentTheme === 'midnight',
+                "bg-ocean-secondary/90": currentTheme === 'ocean',
+                "bg-sunset-secondary/90": currentTheme === 'sunset',
+                "bg-forest-secondary/90": currentTheme === 'forest',
+                "bg-candy-secondary/90": currentTheme === 'candy',
+              }
+            )}
+            sideOffset={10}
+            align="center"
+          >
+            <div className="p-2 space-y-1">
+              <h3 className={cn(
+                "text-sm font-medium px-2 py-1.5",
+                {
+                  "text-midnight-text": currentTheme === 'midnight',
+                  "text-ocean-text": currentTheme === 'ocean',
+                  "text-sunset-text": currentTheme === 'sunset',
+                  "text-forest-text": currentTheme === 'forest',
+                  "text-candy-text": currentTheme === 'candy',
+                }
+              )}>
+                Download Format
+              </h3>
+              
+              <button
+                className={cn(
+                  "flex items-center w-full gap-2 px-2 py-2 rounded-lg transition-all duration-200",
+                  {
+                    "hover:bg-midnight-accent/20 text-midnight-text": currentTheme === 'midnight',
+                    "hover:bg-ocean-accent/20 text-ocean-text": currentTheme === 'ocean',
+                    "hover:bg-sunset-accent/20 text-sunset-text": currentTheme === 'sunset',
+                    "hover:bg-forest-accent/20 text-forest-text": currentTheme === 'forest',
+                    "hover:bg-candy-accent/20 text-candy-text": currentTheme === 'candy',
+                  }
+                )}
+                onClick={() => handleDownload('mp3')}
+              >
+                <Music2 
+                  size={18} 
+                  className={cn({
+                    "text-midnight-accent": currentTheme === 'midnight',
+                    "text-ocean-accent": currentTheme === 'ocean',
+                    "text-sunset-accent": currentTheme === 'sunset',
+                    "text-forest-accent": currentTheme === 'forest',
+                    "text-candy-accent": currentTheme === 'candy',
+                  })}
+                />
+                <span className="text-sm font-medium">MP3 Format</span>
+              </button>
+              
+              <button
+                className={cn(
+                  "flex items-center w-full gap-2 px-2 py-2 rounded-lg transition-all duration-200",
+                  {
+                    "hover:bg-midnight-accent/20 text-midnight-text": currentTheme === 'midnight',
+                    "hover:bg-ocean-accent/20 text-ocean-text": currentTheme === 'ocean',
+                    "hover:bg-sunset-accent/20 text-sunset-text": currentTheme === 'sunset',
+                    "hover:bg-forest-accent/20 text-forest-text": currentTheme === 'forest',
+                    "hover:bg-candy-accent/20 text-candy-text": currentTheme === 'candy',
+                  }
+                )}
+                onClick={() => handleDownload('opus')}
+              >
+                <FileAudio 
+                  size={18} 
+                  className={cn({
+                    "text-midnight-accent": currentTheme === 'midnight',
+                    "text-ocean-accent": currentTheme === 'ocean',
+                    "text-sunset-accent": currentTheme === 'sunset',
+                    "text-forest-accent": currentTheme === 'forest',
+                    "text-candy-accent": currentTheme === 'candy',
+                  })}
+                />
+                <span className="text-sm font-medium">OPUS Format</span>
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
         
         {/* Share button */}
         <Tooltip>
