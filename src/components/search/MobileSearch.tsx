@@ -31,6 +31,13 @@ const MobileSearch: React.FC<MobileSearchProps> = ({
     }
   }, []);
 
+  // Handle keyboard events
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  };
+
   // Background style based on current theme with improved blur effect
   const getBackgroundStyle = () => {
     switch (currentTheme) {
@@ -117,6 +124,7 @@ const MobileSearch: React.FC<MobileSearchProps> = ({
             placeholder="Search songs, artists, lyrics..."
             value={searchQuery}
             onChange={onSearchChange}
+            onKeyDown={handleKeyDown}
             className={cn(
               "w-full pl-10 pr-4 h-12 text-base rounded-xl transition-colors shadow-lg",
               {
@@ -133,6 +141,20 @@ const MobileSearch: React.FC<MobileSearchProps> = ({
         </div>
         
         <SearchTypeSelector />
+
+        {/* Help text */}
+        <p className={cn(
+          "text-sm text-center mt-2",
+          {
+            "text-midnight-text/70": currentTheme === 'midnight',
+            "text-ocean-text/70": currentTheme === 'ocean',
+            "text-sunset-text/70": currentTheme === 'sunset',
+            "text-forest-text/70": currentTheme === 'forest',
+            "text-candy-text/70": currentTheme === 'candy',
+          }
+        )}>
+          Press Escape to close
+        </p>
       </motion.div>
     </motion.div>
   );

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
 import { 
@@ -16,15 +16,31 @@ interface SearchTypeSelectorProps {
 
 const SearchTypeSelector: React.FC<SearchTypeSelectorProps> = ({ isDesktop = false }) => {
   const { currentTheme } = useMusic();
+  const [currentSearchType, setCurrentSearchType] = useState<string>('all');
+
+  // Listen for search type changes from the playlist hook
+  useEffect(() => {
+    const handleSearchTypeUpdate = (event: CustomEvent) => {
+      setCurrentSearchType(event.detail);
+    };
+
+    document.addEventListener('setSearchType', handleSearchTypeUpdate as EventListener);
+    
+    return () => {
+      document.removeEventListener('setSearchType', handleSearchTypeUpdate as EventListener);
+    };
+  }, []);
 
   const handleSearchTypeChange = (value: string) => {
+    console.log('SearchTypeSelector: changing search type to', value);
     if (value === 'all' || value === 'title' || value === 'artist' || value === 'lyrics') {
+      setCurrentSearchType(value);
       document.dispatchEvent(new CustomEvent('setSearchType', { detail: value }));
     }
   };
 
   return (
-    <Select onValueChange={handleSearchTypeChange} defaultValue="all">
+    <Select onValueChange={handleSearchTypeChange} value={currentSearchType}>
       <SelectTrigger 
         className={cn(
           "transition-colors backdrop-blur-xl border-[1.5px] shadow-lg",

@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useMemo } from 'react';
 import { Song } from '@/types/music';
 import { songs } from '@/data/songs';
+import { useDebounce } from './useDebounce';
 
 export const usePlaylist = () => {
   const [currentSong, setCurrentSong] = useState<Song | null>(songs[0] || null);
@@ -8,9 +10,13 @@ export const usePlaylist = () => {
   const [searchType, setSearchType] = useState<'all' | 'title' | 'artist' | 'lyrics'>('all');
   const [filterArtist, setFilterArtist] = useState<string | null>(null);
   
+  // Debounce the search query to improve performance
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  
   // Listen for search type changes from SearchBar component
   useEffect(() => {
     const handleSearchTypeChange = (event: CustomEvent) => {
+      console.log('Search type changed to:', event.detail);
       setSearchType(event.detail as 'all' | 'title' | 'artist' | 'lyrics');
     };
 
@@ -21,40 +27,45 @@ export const usePlaylist = () => {
     };
   }, []);
   
-  const filteredSongs = songs.filter(song => {
-    // First, apply artist filter if present
-    if (filterArtist && song.artist.toLowerCase() !== filterArtist.toLowerCase()) {
-      return false;
-    }
+  // Optimized filtering with useMemo and debounced search
+  const filteredSongs = useMemo(() => {
+    console.log('Filtering songs with query:', debouncedSearchQuery, 'type:', searchType, 'artist filter:', filterArtist);
     
-    if (!searchQuery.trim()) return true; // Show all songs if search query is empty
-    
-    const query = searchQuery.toLowerCase().trim();
-    
-    // Then apply search filter based on type
-    switch (searchType) {
-      case 'title':
-        return song.title.toLowerCase().includes(query);
-      case 'artist':
-        return song.artist.toLowerCase().includes(query);
-      case 'lyrics':
-        // Fix: Check if lyrics is an array before using .some
-        return Array.isArray(song.lyrics) ? 
-          song.lyrics.some(line => line.toLowerCase().includes(query)) : 
-          Object.values(song.lyrics || {}).some(text => 
-            typeof text === 'string' && text.toLowerCase().includes(query)
-          );
-      case 'all':
-      default:
-        return song.title.toLowerCase().includes(query) || 
-               song.artist.toLowerCase().includes(query) ||
-               (Array.isArray(song.lyrics) ? 
-                song.lyrics.some(line => line.toLowerCase().includes(query)) : 
-                Object.values(song.lyrics || {}).some(text => 
-                  typeof text === 'string' && text.toLowerCase().includes(query)
-                ));
-    }
-  });
+    return songs.filter(song => {
+      // First, apply artist filter if present
+      if (filterArtist && song.artist.toLowerCase() !== filterArtist.toLowerCase()) {
+        return false;
+      }
+      
+      if (!debouncedSearchQuery.trim()) return true; // Show all songs if search query is empty
+      
+      const query = debouncedSearchQuery.toLowerCase().trim();
+      
+      // Then apply search filter based on type
+      switch (searchType) {
+        case 'title':
+          return song.title.toLowerCase().includes(query);
+        case 'artist':
+          return song.artist.toLowerCase().includes(query);
+        case 'lyrics':
+          // Fix: Check if lyrics is an array before using .some
+          return Array.isArray(song.lyrics) ? 
+            song.lyrics.some(line => line.toLowerCase().includes(query)) : 
+            Object.values(song.lyrics || {}).some(text => 
+              typeof text === 'string' && text.toLowerCase().includes(query)
+            );
+        case 'all':
+        default:
+          return song.title.toLowerCase().includes(query) || 
+                 song.artist.toLowerCase().includes(query) ||
+                 (Array.isArray(song.lyrics) ? 
+                  song.lyrics.some(line => line.toLowerCase().includes(query)) : 
+                  Object.values(song.lyrics || {}).some(text => 
+                    typeof text === 'string' && text.toLowerCase().includes(query)
+                  ));
+      }
+    });
+  }, [debouncedSearchQuery, searchType, filterArtist]);
 
   const nextSong = () => {
     // Get the active playlist based on current filters
