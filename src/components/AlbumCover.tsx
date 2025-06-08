@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef, useCallback } from 'react';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
-import { Share2, Download, Music2, FileAudio } from 'lucide-react';
+import { Share2, Download, Music2, FileAudio, LogOut } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import LikeButton from '@/components/LikeButton';
@@ -12,11 +13,24 @@ const AlbumCover: React.FC = () => {
     isPlaying, 
     currentTheme,
     shareCurrentSong,
-    downloadCurrentSong
+    downloadCurrentSong,
+    toggleLike,
+    isLiked
   } = useMusic();
 
   // State for download format
   const [downloadFormat, setDownloadFormat] = useState<'mp3' | 'opus'>('mp3');
+  
+  // States for interaction feedback
+  const [isDoubleClicking, setIsDoubleClicking] = useState(false);
+  const [isLongPressing, setIsLongPressing] = useState(false);
+  const [showLikeAnimation, setShowLikeAnimation] = useState(false);
+  const [showShareAnimation, setShowShareAnimation] = useState(false);
+  
+  // Refs for interaction handling
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const clickCountRef = useRef(0);
+  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   if (!currentSong) return null;
 
@@ -25,16 +39,91 @@ const AlbumCover: React.FC = () => {
 
   const handleDownload = (format: 'mp3' | 'opus') => {
     setDownloadFormat(format);
-    downloadCurrentSong(); // Removed the argument here as it's not expected
+    downloadCurrentSong();
   };
+
+  // Handle double-click to like
+  const handleClick = useCallback(() => {
+    clickCountRef.current += 1;
+    
+    if (clickCountRef.current === 1) {
+      clickTimerRef.current = setTimeout(() => {
+        clickCountRef.current = 0;
+      }, 300);
+    } else if (clickCountRef.current === 2) {
+      // Double click detected
+      if (clickTimerRef.current) {
+        clearTimeout(clickTimerRef.current);
+      }
+      clickCountRef.current = 0;
+      
+      // Trigger like animation and action
+      setIsDoubleClicking(true);
+      setShowLikeAnimation(true);
+      toggleLike(currentSong.id);
+      
+      setTimeout(() => {
+        setIsDoubleClicking(false);
+        setShowLikeAnimation(false);
+      }, 600);
+    }
+  }, [currentSong.id, toggleLike]);
+
+  // Handle long press to share
+  const handleMouseDown = useCallback(() => {
+    longPressTimerRef.current = setTimeout(() => {
+      setIsLongPressing(true);
+      setShowShareAnimation(true);
+      shareCurrentSong();
+      
+      setTimeout(() => {
+        setIsLongPressing(false);
+        setShowShareAnimation(false);
+      }, 600);
+    }, 800); // 800ms for long press
+  }, [shareCurrentSong]);
+
+  const handleMouseUp = useCallback(() => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+  }, []);
+
+  // Touch event handlers for mobile
+  const handleTouchStart = useCallback(() => {
+    longPressTimerRef.current = setTimeout(() => {
+      setIsLongPressing(true);
+      setShowShareAnimation(true);
+      shareCurrentSong();
+      
+      setTimeout(() => {
+        setIsLongPressing(false);
+        setShowShareAnimation(false);
+      }, 600);
+    }, 800);
+  }, [shareCurrentSong]);
+
+  const handleTouchEnd = useCallback(() => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+  }, []);
 
   return (
     <div className="w-full aspect-square overflow-hidden rounded-2xl relative group">
       <div
         className={cn(
-          "w-full h-full transition-all duration-700",
+          "w-full h-full transition-all duration-700 cursor-pointer select-none",
           isPlaying ? "scale-105 rotate-3" : "scale-100 rotate-0",
           "group-hover:scale-105",
+          isDoubleClicking && "animate-pulse",
+          isLongPressing && "scale-95",
           {
             "shadow-xl shadow-midnight-accent/30": currentTheme === 'midnight',
             "shadow-xl shadow-ocean-accent/30": currentTheme === 'ocean',
@@ -43,11 +132,18 @@ const AlbumCover: React.FC = () => {
             "shadow-xl shadow-candy-accent/30": currentTheme === 'candy',
           }
         )}
+        onClick={handleClick}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         <img
           src={coverSrc}
           alt={`${currentSong.title} by ${currentSong.artist}`}
-          className="w-full h-full object-cover rounded-2xl transform transition-all duration-700"
+          className="w-full h-full object-cover rounded-2xl transform transition-all duration-700 pointer-events-none"
+          draggable={false}
         />
         
         {/* Animated overlay when playing */}
@@ -81,6 +177,68 @@ const AlbumCover: React.FC = () => {
             )}
           />
         )}
+
+        {/* Like Animation Overlay */}
+        {showLikeAnimation && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div 
+              className={cn(
+                "text-6xl animate-scale-in opacity-0 animate-fade-in",
+                {
+                  "text-midnight-accent": currentTheme === 'midnight',
+                  "text-ocean-accent": currentTheme === 'ocean',
+                  "text-sunset-accent": currentTheme === 'sunset',
+                  "text-forest-accent": currentTheme === 'forest',
+                  "text-candy-accent": currentTheme === 'candy',
+                }
+              )}
+              style={{
+                animation: 'likeAnimation 0.6s ease-out forwards'
+              }}
+            >
+              {isLiked(currentSong.id) ? '💖' : '💔'}
+            </div>
+          </div>
+        )}
+
+        {/* Share Animation Overlay */}
+        {showShareAnimation && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div 
+              className={cn(
+                "text-4xl animate-scale-in opacity-0 animate-fade-in",
+                {
+                  "text-midnight-accent": currentTheme === 'midnight',
+                  "text-ocean-accent": currentTheme === 'ocean',
+                  "text-sunset-accent": currentTheme === 'sunset',
+                  "text-forest-accent": currentTheme === 'forest',
+                  "text-candy-accent": currentTheme === 'candy',
+                }
+              )}
+              style={{
+                animation: 'shareAnimation 0.6s ease-out forwards'
+              }}
+            >
+              📤
+            </div>
+          </div>
+        )}
+
+        {/* Interaction Hints */}
+        <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className={cn(
+            "text-xs text-center py-1 px-2 rounded-lg backdrop-blur-sm",
+            {
+              "bg-midnight-secondary/80 text-midnight-text": currentTheme === 'midnight',
+              "bg-ocean-secondary/80 text-ocean-text": currentTheme === 'ocean',
+              "bg-sunset-secondary/80 text-sunset-text": currentTheme === 'sunset',
+              "bg-forest-secondary/80 text-forest-text": currentTheme === 'forest',
+              "bg-candy-secondary/80 text-candy-text": currentTheme === 'candy',
+            }
+          )}>
+            Double-tap to like • Long press to share
+          </div>
+        </div>
       </div>
       
       {/* Action buttons positioned vertically on the right side */}
@@ -232,6 +390,38 @@ const AlbumCover: React.FC = () => {
           </TooltipContent>
         </Tooltip>
       </div>
+
+      <style jsx>{`
+        @keyframes likeAnimation {
+          0% {
+            transform: scale(0.5);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.2);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes shareAnimation {
+          0% {
+            transform: scale(0.5) translateY(0);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.1) translateY(-10px);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1) translateY(-20px);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 };

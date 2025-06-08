@@ -4,8 +4,9 @@ import ThemeSelector from './ThemeSelector';
 import SearchBar from './SearchBar';
 import { useMusic } from '@/components/MusicContext';
 import { cn } from '@/lib/utils';
-import { Heart } from 'lucide-react';
+import { Heart, LogOut } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const TopNav: React.FC = () => {
   const { currentTheme, toggleFavoritesView, showFavoritesOnly, resetToDefaultSong } = useMusic();
@@ -18,6 +19,12 @@ const TopNav: React.FC = () => {
   const handleTitleClick = (e: React.MouseEvent) => {
     // Reset to default song instead of preventing navigation
     resetToDefaultSong();
+  };
+
+  // Placeholder logout function - will be replaced when authentication is implemented
+  const handleLogout = () => {
+    console.log('Logout clicked - will be implemented with authentication');
+    // This will be replaced with actual logout logic when Supabase authentication is set up
   };
 
   return (
@@ -94,6 +101,31 @@ const TopNav: React.FC = () => {
             />
             <span className="hidden sm:inline text-sm font-medium">Favorites</span>
           </button>
+
+          {/* Logout Button - will be shown when authentication is implemented */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleLogout}
+                className={cn(
+                  "p-2 rounded-full transition-all duration-300 hover-scale shadow-lg backdrop-blur-xl",
+                  {
+                    "bg-midnight-secondary/20 hover:bg-midnight-secondary/40 text-midnight-accent hover:text-midnight-text": currentTheme === 'midnight',
+                    "bg-ocean-secondary/20 hover:bg-ocean-secondary/40 text-ocean-accent hover:text-ocean-text": currentTheme === 'ocean',
+                    "bg-sunset-secondary/20 hover:bg-sunset-secondary/40 text-sunset-accent hover:text-sunset-text": currentTheme === 'sunset',
+                    "bg-forest-secondary/20 hover:bg-forest-secondary/40 text-forest-accent hover:text-forest-text": currentTheme === 'forest',
+                    "bg-candy-secondary/20 hover:bg-candy-secondary/40 text-candy-accent hover:text-candy-text": currentTheme === 'candy',
+                  }
+                )}
+              >
+                <LogOut size={20} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Logout</p>
+            </TooltipContent>
+          </Tooltip>
+
           <ThemeSelector />
         </div>
       </div>
