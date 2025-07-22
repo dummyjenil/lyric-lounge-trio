@@ -6,7 +6,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/hooks/use-toast';
 import { songs } from '@/data/songs';
 import DownloadProgress from '@/components/DownloadProgress';
-import LoadingProgress from '@/components/LoadingProgress';
 
 interface MusicContextType {
   currentSong: Song | null;
@@ -86,12 +85,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState<number>(0);
   const [downloadFileName, setDownloadFileName] = useState<string>('');
   
-  // Loading progress states for songs
-  const [isLoadingSongs, setIsLoadingSongs] = useState<boolean>(true);
-  const [loadingProgress, setLoadingProgress] = useState<number>(0);
-  const [loadingType, setLoadingType] = useState<'initial' | 'search'>('initial');
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  
   // Interval for updating elapsed time during download
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -117,28 +110,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [isDownloading, downloadStartTime, downloadProgress]);
   
-  // Simulate initial loading of songs
-  useEffect(() => {
-    const simulateInitialLoading = async () => {
-      setIsLoadingSongs(true);
-      setLoadingType('initial');
-      setLoadingProgress(0);
-      
-      // Simulate loading progress
-      const intervals = [20, 40, 60, 80, 100];
-      for (let i = 0; i < intervals.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 200));
-        setLoadingProgress(intervals[i]);
-      }
-      
-      // Keep at 100% briefly then hide
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setIsLoadingSongs(false);
-    };
-    
-    simulateInitialLoading();
-  }, []);
-
   // Load liked songs from localStorage on mount
   useEffect(() => {
     const storedLikedSongs = localStorage.getItem('likedSongs');
@@ -151,32 +122,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     localStorage.setItem('likedSongs', JSON.stringify(likedSongs));
   }, [likedSongs]);
-
-  // Simulate search loading when search query changes
-  useEffect(() => {
-    if (searchQuery.trim()) {
-      const simulateSearchLoading = async () => {
-        setIsSearching(true);
-        setLoadingType('search');
-        setLoadingProgress(0);
-        
-        // Simulate search progress
-        const intervals = [25, 50, 75, 100];
-        for (let i = 0; i < intervals.length; i++) {
-          await new Promise(resolve => setTimeout(resolve, 150 + Math.random() * 100));
-          setLoadingProgress(intervals[i]);
-        }
-        
-        // Keep at 100% briefly then hide
-        await new Promise(resolve => setTimeout(resolve, 300));
-        setIsSearching(false);
-      };
-      
-      simulateSearchLoading();
-    } else {
-      setIsSearching(false);
-    }
-  }, [searchQuery]);
 
   // Toggle like status for a song
   const toggleLike = (songId: string) => {
@@ -439,8 +384,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <MusicContext.Provider value={contextValue}>
       {children}
-      
-      {/* Download Progress Dialog */}
       {isDownloading && (
         <DownloadProgress
           progress={downloadProgress}
@@ -449,17 +392,6 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           estimatedTimeRemaining={estimatedTimeRemaining}
           theme={currentTheme}
           onCancel={cancelDownload}
-        />
-      )}
-      
-      {/* Loading Progress Dialog */}
-      {(isLoadingSongs || isSearching) && (
-        <LoadingProgress
-          isOpen={isLoadingSongs || isSearching}
-          progress={loadingProgress}
-          loadingType={loadingType}
-          searchQuery={searchQuery}
-          theme={currentTheme}
         />
       )}
     </MusicContext.Provider>
