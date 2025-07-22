@@ -6,6 +6,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/hooks/use-toast';
 import { songs } from '@/data/songs';
 import DownloadProgress from '@/components/DownloadProgress';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface MusicContextType {
   currentSong: Song | null;
@@ -34,6 +35,8 @@ interface MusicContextType {
   downloadCurrentSong: (format?: 'mp3' | 'opus') => void; // Updated to accept optional format parameter
   shareCurrentSong: () => void;
   resetToDefaultSong: () => void;
+  showLoadingSpinner: (message?: string) => void;
+  hideLoadingSpinner: () => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -76,6 +79,10 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [likedSongs, setLikedSongs] = useState<string[]>([]);
   // State for showing favorites only
   const [showFavoritesOnly, setShowFavoritesOnly] = useState<boolean>(false);
+  
+  // Loading spinner states
+  const [isLoadingSpinnerVisible, setIsLoadingSpinnerVisible] = useState<boolean>(false);
+  const [loadingMessage, setLoadingMessage] = useState<string>("Loading...");
   
   // Download progress states
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
@@ -297,6 +304,17 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Show loading spinner with optional message
+  const showLoadingSpinner = (message: string = "Loading...") => {
+    setLoadingMessage(message);
+    setIsLoadingSpinnerVisible(true);
+  };
+
+  // Hide loading spinner
+  const hideLoadingSpinner = () => {
+    setIsLoadingSpinnerVisible(false);
+  };
+
   // Reset to the default song (first song in the list)
   const resetToDefaultSong = () => {
     const defaultSong = songs[0];
@@ -352,6 +370,16 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, []);
 
+  // Show loading spinner on initial load
+  useEffect(() => {
+    showLoadingSpinner("Initializing music player...");
+    const timer = setTimeout(() => {
+      hideLoadingSpinner();
+    }, 2000); // Simulate initial loading time
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   const contextValue = {
     currentSong,
     isPlaying,
@@ -379,6 +407,8 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     downloadCurrentSong, // Updated function with format support
     shareCurrentSong,
     resetToDefaultSong,
+    showLoadingSpinner,
+    hideLoadingSpinner,
   };
 
   return (
@@ -394,6 +424,11 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           onCancel={cancelDownload}
         />
       )}
+      <LoadingSpinner
+        isVisible={isLoadingSpinnerVisible}
+        message={loadingMessage}
+        onCancel={hideLoadingSpinner}
+      />
     </MusicContext.Provider>
   );
 };
