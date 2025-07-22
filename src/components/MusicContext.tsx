@@ -428,6 +428,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         isVisible={isLoadingSpinnerVisible}
         message={loadingMessage}
         onCancel={hideLoadingSpinner}
+        theme={currentTheme}
       />
     </MusicContext.Provider>
   );
