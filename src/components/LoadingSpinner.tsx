@@ -14,29 +14,29 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   isVisible,
   message = "Loading...",
   onCancel,
-  theme = 'blue'
+  theme = 'midnight'
 }) => {
   if (!isVisible) return null;
 
   const getThemeClasses = () => {
     switch (theme) {
-      case 'purple':
+      case 'midnight':
         return {
-          backdrop: 'bg-purple-950/80',
-          card: 'bg-purple-900/90 border-purple-700',
-          spinner: 'text-purple-400',
-          text: 'text-purple-100',
-          button: 'text-purple-300 hover:text-purple-100'
+          backdrop: 'bg-slate-950/80',
+          card: 'bg-slate-900/90 border-slate-700',
+          spinner: 'text-slate-400',
+          text: 'text-slate-100',
+          button: 'text-slate-300 hover:text-slate-100'
         };
-      case 'green':
+      case 'ocean':
         return {
-          backdrop: 'bg-green-950/80',
-          card: 'bg-green-900/90 border-green-700',
-          spinner: 'text-green-400',
-          text: 'text-green-100',
-          button: 'text-green-300 hover:text-green-100'
+          backdrop: 'bg-cyan-950/80',
+          card: 'bg-cyan-900/90 border-cyan-700',
+          spinner: 'text-cyan-400',
+          text: 'text-cyan-100',
+          button: 'text-cyan-300 hover:text-cyan-100'
         };
-      case 'orange':
+      case 'sunset':
         return {
           backdrop: 'bg-orange-950/80',
           card: 'bg-orange-900/90 border-orange-700',
@@ -44,7 +44,15 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
           text: 'text-orange-100',
           button: 'text-orange-300 hover:text-orange-100'
         };
-      case 'pink':
+      case 'forest':
+        return {
+          backdrop: 'bg-green-950/80',
+          card: 'bg-green-900/90 border-green-700',
+          spinner: 'text-green-400',
+          text: 'text-green-100',
+          button: 'text-green-300 hover:text-green-100'
+        };
+      case 'candy':
         return {
           backdrop: 'bg-pink-950/80',
           card: 'bg-pink-900/90 border-pink-700',
@@ -52,22 +60,13 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
           text: 'text-pink-100',
           button: 'text-pink-300 hover:text-pink-100'
         };
-      case 'dark':
-        return {
-          backdrop: 'bg-gray-950/80',
-          card: 'bg-gray-900/90 border-gray-700',
-          spinner: 'text-gray-400',
-          text: 'text-gray-100',
-          button: 'text-gray-300 hover:text-gray-100'
-        };
-      case 'blue':
       default:
         return {
-          backdrop: 'bg-blue-950/80',
-          card: 'bg-blue-900/90 border-blue-700',
-          spinner: 'text-blue-400',
-          text: 'text-blue-100',
-          button: 'text-blue-300 hover:text-blue-100'
+          backdrop: 'bg-slate-950/80',
+          card: 'bg-slate-900/90 border-slate-700',
+          spinner: 'text-slate-400',
+          text: 'text-slate-100',
+          button: 'text-slate-300 hover:text-slate-100'
         };
     }
   };
